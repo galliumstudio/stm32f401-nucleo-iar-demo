@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <help_text>// Uncomment the following line to change the fontsize and font:
+fontsize=11
+fontfamily=Monospaced //possible: SansSerif,Serif,Monospaced
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Welcome to UMLet!
+//
+// Double-click on elements to add them to the diagram, or to copy them
+// Edit elements by modifying the text in this panel
+// Hold Ctrl to select multiple elements
+// Use Ctrl+mouse to select via lasso
+//
+// Use +/- or Ctrl+mouse wheel to zoom
+// Drag a whole relation at its central square icon
+//
+// Press Ctrl+C to copy the whole diagram to the system clipboard (then just paste it to, eg, Word)
+// Edit the files in the "palettes" directory to create your own element palettes
+//
+// Select "Custom Elements &gt; New..." to create new element types
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// This text will be stored with each diagram;  use it for notes.</help_text>
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>20</x>
+      <y>20</y>
+      <w>1380</w>
+      <h>940</h>
+    </coordinates>
+    <panel_attributes>System::Root
+--
+SYSTEM_START_REQ/ ^SYSTEM_START_CFM(STATE)
+
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>460</x>
+      <y>100</y>
+      <w>410</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>Stopped
+--
+SYSTEM_STOP_REQ/ ^SYSTEM_STOP_CFM(SUCCESS)
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>860</x>
+      <y>240</y>
+      <w>380</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Stopping1
+--
+entry/ start stateTimer, m_cfmCount = 0,
+       ^UART_ACT_STOP_REQ
+exit/ stop stateTimer, recall
+
+SYSTEM_STOP_REQ/ defer
+UART_ACT_STOP_CFM
+/ if (SUCCESS)
+    if (++cfmCount == 1) ^DONE
+  else ^FAIL    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>240</y>
+      <w>380</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Starting1
+--
+entry/ start stateTimer, m_cfmCount = 0,
+       ^UART_ACT_START_REQ(uart2OutFifo, uart2InFifo)
+exit/ stop stateTimer
+
+UART_ACT_START_CFM
+/ if (SUCCESS)
+    if (++cfmCount == 1) ^DONE
+  else ^FAIL  
+     
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>260</x>
+      <y>150</y>
+      <w>220</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>460</x>
+      <y>310</y>
+      <w>420</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;400.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>260</x>
+      <y>380</y>
+      <w>30</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>590</x>
+      <y>60</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>60</y>
+      <w>80</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0;60.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>860</x>
+      <y>150</y>
+      <w>210</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>190.0;90.0;190.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>590</x>
+      <y>430</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=final</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>600</x>
+      <y>430</y>
+      <w>170</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>150.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1040</x>
+      <y>630</y>
+      <w>380</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>360.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>270</x>
+      <y>190</y>
+      <w>230</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>SYSTEM_START_REQ/ save sequence
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>560</x>
+      <y>280</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>FAIL, STATE_TIMER
+/ ^UART_ACT_START_CFM(error)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>630</x>
+      <y>410</y>
+      <w>130</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>FAIL, STATE_TIMER
+/ FW_ASSERT(0)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>550</x>
+      <y>530</y>
+      <w>240</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>FAIL, STATE_TIMER
+/ ^UART_ACT_START_CFM(error)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>1110</x>
+      <y>680</y>
+      <w>230</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>SYSTEM_STOP_REQ/ save sequence
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>770</y>
+      <w>1080</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Started
+--
+entry/ start testTimer
+exit/ stop testTimer
+TEST_TIMER/ print test message
+USER_BTN_DOWN_IND/ USER_LED_ON_REQ
+USER_BTN_UP_IND/ USER_LED_OFF_REQ
+
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>90</x>
+      <y>490</y>
+      <w>380</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Starting2
+--
+entry/ start stateTimer, m_cfmCount = 0
+       ^USER_LED_START_REQ, 
+       ^USER_BTN_START_REQ
+exit/ stop stateTimer
+
+USER_LED_START_CFM, USER_BTN_START_CFM
+/ if (SUCCESS)
+    if (++cfmCount == 2) ^DONE
+  else ^FAIL  
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>260</x>
+      <y>630</y>
+      <w>30</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>270</x>
+      <y>690</y>
+      <w>240</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>DONE/ ^UART_ACT_START_CFM(SUCCESS)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>270</x>
+      <y>430</y>
+      <w>270</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>DONE/ Log::AddInterface(uart2OutFifo)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>860</x>
+      <y>490</y>
+      <w>380</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Stopping2
+--
+entry/ start stateTimer, m_cfmCount = 0,
+       ^USER_LED_STOP_REQ,
+       ^USER+BTN__STOP_REQ
+exit/ stop stateTimer, recall
+
+SYSTEM_STOP_REQ/ defer
+USER_LED_STOP_CFM, USER_BTN_STOP_CFM
+/ if (SUCCESS)
+    if (++m_cfmCount == 2) ^DONE
+  else ^FAIL
+    
+valign=top
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>750</x>
+      <y>430</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>350</y>
+      <w>130</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>440</y>
+      <w>130</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>110.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1040</x>
+      <y>380</y>
+      <w>30</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>1050</x>
+      <y>440</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>DONE
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>1050</x>
+      <y>190</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>DONE
+/ ^SYSTEM_STOP_CFM(SUCCESS)
+style=wordwrap</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>460</x>
+      <y>560</y>
+      <w>420</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;400.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1060</x>
+      <y>110</y>
+      <w>170</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>Note..
+Can add check to only send STOP_CFM when a STOP_REQ has been received.
+
+style=wordwrap
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
