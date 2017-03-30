@@ -292,9 +292,9 @@ QState System::Stopping1(System * const me, QEvt const * const e) {
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             me->m_stateTimer.disarm();
-            status = Q_HANDLED();
             // recall event
             me->recall(&me->m_deferQueue);
+            status = Q_HANDLED();            
             break;
         }
         case SYSTEM_STOP_REQ: {
@@ -354,9 +354,9 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             me->m_stateTimer.disarm();
-            status = Q_HANDLED();
             // recall event
             me->recall(&me->m_deferQueue);
+            status = Q_HANDLED();
             break;
         }
         case SYSTEM_STOP_REQ: {
@@ -451,6 +451,7 @@ QState System::Started(System * const me, QEvt const * const e) {
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             DEBUG("Rx char %c", ind.GetChar());
+            status = Q_HANDLED();
             break;
         }
         default: {
