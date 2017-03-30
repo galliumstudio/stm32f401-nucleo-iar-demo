@@ -67,6 +67,7 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(SYSTEM_FAIL);
     me->subscribe(UART_ACT_START_CFM);
     me->subscribe(UART_IN_CHAR_IND);
+    me->subscribe(UART_IN_DATA_IND);
     me->subscribe(USER_BTN_START_CFM);
     me->subscribe(USER_BTN_UP_IND);
     me->subscribe(USER_BTN_DOWN_IND);
@@ -292,9 +293,9 @@ QState System::Stopping1(System * const me, QEvt const * const e) {
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             me->m_stateTimer.disarm();
-            status = Q_HANDLED();
             // recall event
             me->recall(&me->m_deferQueue);
+            status = Q_HANDLED();
             break;
         }
         case SYSTEM_STOP_REQ: {
@@ -354,9 +355,9 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
             me->m_stateTimer.disarm();
-            status = Q_HANDLED();
             // recall event
             me->recall(&me->m_deferQueue);
+            status = Q_HANDLED();
             break;
         }
         case SYSTEM_STOP_REQ: {
@@ -399,7 +400,7 @@ QState System::Started(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->m_testTimer.armX(2000, 2000);   
+            //me->m_testTimer.armX(2000, 2000);   
             status = Q_HANDLED();
             break;
         }
@@ -448,9 +449,24 @@ QState System::Started(System * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;    
         }
+        // Gallium - test only
+        /*
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             DEBUG("Rx char %c", ind.GetChar());
+            status = Q_HANDLED();
+            break;
+        }
+        */
+        case UART_IN_DATA_IND: {
+            // Gallium - test only
+            uint32_t count = me->m_uart2InFifo.GetUsedCount();
+            while(count--) {
+                uint8_t ch;
+                me->m_uart2InFifo.Read(&ch, 1);
+                DEBUG("Rx char %c", ch);
+            }
+            status = Q_HANDLED();
             break;
         }
         default: {

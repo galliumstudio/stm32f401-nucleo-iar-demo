@@ -39,7 +39,18 @@ namespace APP {
 UART_HandleTypeDef UartAct::m_hal;  
   
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hal) {
+    // hal for future use (to support multiple instances).
     UartOut::DmaCompleteCallback(UART2_OUT);
+}
+
+extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hal) {
+    // hal for future use (to support multiple instances).
+    UartIn::DmaCompleteCallback(UART2_IN);
+}
+
+extern "C" void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *hal) {
+    // hal for future use (to support multiple instances).
+    UartIn::DmaHalfCompleteCallback(UART2_IN);
 }
 
 UART_HandleTypeDef *UartAct::GetHal(uint8_t id) {
@@ -87,9 +98,12 @@ QState UartAct::InitialPseudoState(UartAct * const me, QEvt const * const e) {
     me->subscribe(UART_IN_START_CFM);
     me->subscribe(UART_IN_STOP_REQ);
     me->subscribe(UART_IN_STOP_CFM);
-    me->subscribe(UART_IN_STATE_TIMER);
+    me->subscribe(UART_IN_ACTIVE_TIMER);
     me->subscribe(UART_IN_DONE);
     me->subscribe(UART_IN_DATA_RDY);
+    me->subscribe(UART_IN_DMA_RECV);
+    me->subscribe(UART_IN_OVERFLOW);
+    me->subscribe(UART_IN_HW_FAIL);
     
     return Q_TRAN(&UartAct::Root);
 }
@@ -142,9 +156,12 @@ QState UartAct::Root(UartAct * const me, QEvt const * const e) {
         };
         case UART_IN_START_REQ:
         case UART_IN_STOP_REQ:
-        case UART_IN_STATE_TIMER:
+        case UART_IN_ACTIVE_TIMER:
         case UART_IN_DONE:
-        case UART_IN_DATA_RDY: {
+        case UART_IN_DATA_RDY:
+        case UART_IN_DMA_RECV:
+        case UART_IN_OVERFLOW:
+        case UART_IN_HW_FAIL: {
             me->m_uartIn.dispatch(e);
             break;
         }

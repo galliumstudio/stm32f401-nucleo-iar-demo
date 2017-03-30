@@ -78,10 +78,14 @@ enum {
     UART_IN_STOP_REQ,
     UART_IN_STOP_CFM,
     UART_IN_CHAR_IND,   // For testing only (by-passing fifo)
+    UART_IN_DATA_IND,   // of type Evt. Data received and stored in fifo.
     UART_IN_FAIL_IND,
-    UART_IN_STATE_TIMER,
+    UART_IN_ACTIVE_TIMER,
     UART_IN_DONE,
     UART_IN_DATA_RDY,   // of type Evt
+    UART_IN_DMA_RECV,   // of type Evt
+    UART_IN_OVERFLOW,   // of type Evt
+    UART_IN_HW_FAIL,   // of type Evt
     
     USER_BTN_START_REQ,
     USER_BTN_START_CFM,

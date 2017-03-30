@@ -27,16 +27,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
+#include "bsp.h"
 #include "hsm_id.h"
 #include "fw_log.h"
+#include "fw_evt.h"
 #include "UartIn.h"
 #include "event.h"
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 namespace APP {
 
+void UartIn::DmaCompleteCallback(uint8_t id) {
+    // id for future use (to support multiple instances).
+    static uint16_t counter = 0;
+    Evt *evt = new Evt(UART_IN_DMA_RECV, counter++);
+    QF::PUBLISH(evt, 0);
+}
+
+void UartIn::DmaHalfCompleteCallback(uint8_t id) {
+    // id for future use (to support multiple instances).
+    static uint16_t counter = 0;
+    Evt *evt = new Evt(UART_IN_DMA_RECV, counter++);
+    QF::PUBLISH(evt, 0);
+}
+
 void UartIn::RxCallback(uint8_t id) {
+    // id for future use (to support multiple instances).
     static uint16_t counter = 0;
     Evt *evt = new Evt(UART_IN_DATA_RDY, counter++);
     QF::PUBLISH(evt, 0);
@@ -60,7 +77,7 @@ void UartIn::DisableRxInt() {
 UartIn::UartIn(uint8_t id, char const *name, QActive *owner, UART_HandleTypeDef &hal) :
     QHsm((QStateHandler)&UartIn::InitialPseudoState), m_id(id), m_name(name), 
     m_nextSequence(0), m_owner(owner),
-    m_hal(hal), m_stateTimer(owner, UART_IN_STATE_TIMER) {}
+    m_hal(hal), m_fifo(NULL), m_dataRecv(false), m_activeTimer(owner, UART_IN_ACTIVE_TIMER) {}
 
 QState UartIn::InitialPseudoState(UartIn * const me, QEvt const * const e) {
     (void)e;
@@ -123,7 +140,10 @@ QState UartIn::Stopped(UartIn * const me, QEvt const * const e) {
         }
         case UART_IN_START_REQ: {
             LOG_EVENT(e);
-            Evt const &req = EVT_CAST(*e);
+            UartInStartReq const &req = static_cast<UartInStartReq const &>(*e);
+            me->m_fifo = req.GetFifo();
+            Q_ASSERT(me->m_fifo);
+            me->m_fifo->Reset();
             Evt *evt = new UartInStartCfm(req.GetSeq(), ERROR_SUCCESS);
             QF::PUBLISH(evt, me);
             status = Q_TRAN(&UartIn::Started);
@@ -142,14 +162,16 @@ QState UartIn::Started(UartIn * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->EnableRxInt();
             status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-            me->DisableRxInt();
             status = Q_HANDLED();
+            break;
+        }
+        case Q_INIT_SIG: {
+            status = Q_TRAN(&UartIn::Normal);
             break;
         }
         case UART_IN_STOP_REQ: {
@@ -160,6 +182,8 @@ QState UartIn::Started(UartIn * const me, QEvt const * const e) {
             status = Q_TRAN(&UartIn::Stopped);
             break;
         }
+        // Gallium - For test only. By-pass DMA and FIFO.
+        /*
         case UART_IN_DATA_RDY: {
             //LOG_EVENT(e);
             char ch = me->m_hal.Instance->DR & (uint8_t)0x00FFU; 
@@ -168,8 +192,154 @@ QState UartIn::Started(UartIn * const me, QEvt const * const e) {
             me->EnableRxInt();
             break;
         }
+        */
         default: {
             status = Q_SUPER(&UartIn::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UartIn::Failed(UartIn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UartIn::Started);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UartIn::Normal(UartIn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            HAL_StatusTypeDef result;
+            result = HAL_UART_Receive_DMA(&me->m_hal, (uint8_t *)me->m_fifo->GetAddr(0), me->m_fifo->GetBufSize());
+            Q_ASSERT(result == HAL_OK);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            HAL_UART_DMAStop(&me->m_hal);
+            me->DisableRxInt();
+            status = Q_HANDLED();
+            break;
+        }
+        case UART_IN_DMA_RECV: {
+            LOG_EVENT(e);
+            // Sample DMA remaining count first. It may keep decrementing as data are being received.
+            // Those that arrrive after this point will be processed on the next DMA_RECV event.
+            // The FIFO write index is only updated in this region, so there is no need to enforce
+            // critical section.
+            uint32_t dmaRemainCount = __HAL_DMA_GET_COUNTER(me->m_hal.hdmarx);
+            uint32_t dmaCurrIndex = me->m_fifo->GetBufSize() - dmaRemainCount;
+            uint32_t dmaRxCount = me->m_fifo->GetDiff(dmaCurrIndex, me->m_fifo->GetWriteIndex());
+            if (dmaRxCount > 0) {
+                if (dmaRxCount > me->m_fifo->GetAvailCount()) {
+                    Evt  *evt = new Evt(UART_IN_OVERFLOW);
+                    me->m_owner->postLIFO(evt);
+                } else {
+                    me->m_fifo->IncWriteIndex(dmaRxCount);
+                    Evt *evt = new Evt(UART_IN_DATA_IND, me->m_nextSequence++);
+                    QF::PUBLISH(evt, me);
+                }
+            }
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_INIT_SIG: {
+            status = Q_TRAN(&UartIn::Inactive);
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UartIn::Started);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UartIn::Inactive(UartIn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            me->EnableRxInt();
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case UART_IN_DATA_RDY: {
+            LOG_EVENT(e);
+            // Receive buffer not empty interrupt from UART. It indicates UART RX activity.
+            // Rx interrupt automatically disabled in ISR.
+            status = Q_TRAN(&UartIn::Active);
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UartIn::Normal);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UartIn::Active(UartIn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            me->m_activeTimer.armX(ACTIVE_TIMER_MS);
+            me->EnableRxInt();
+            me->m_dataRecv = false;
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            me->m_activeTimer.disarm();
+            status = Q_HANDLED();
+            break;
+        }
+        case UART_IN_ACTIVE_TIMER: {
+            LOG_EVENT(e);
+            if (me->m_dataRecv) {
+                status = Q_TRAN(&UartIn::Active);
+            } else {
+                Evt *evt = new Evt(UART_IN_DMA_RECV, 0);
+                QF::PUBLISH(evt, me);
+                status = Q_TRAN(&UartIn::Inactive);
+            }
+            break;
+        }
+        case UART_IN_DATA_RDY: {
+            LOG_EVENT(e);
+            // Receive buffer not empty interrupt from UART. It indicates UART RX activity.
+            me->m_dataRecv = true;
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UartIn::Normal);
             break;
         }
     }

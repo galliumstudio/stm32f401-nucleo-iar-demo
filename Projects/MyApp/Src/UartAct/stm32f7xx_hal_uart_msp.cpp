@@ -106,9 +106,8 @@ static void InitUart2(UART_HandleTypeDef *usart) {
     NVIC_SetPriority(DMA1_Stream6_IRQn, DMA1_STREAM6_PRIO);
     NVIC_EnableIRQ(DMA1_Stream6_IRQn);
     // NVIC for DMA RX
-    // Gallium - disabled for testing.
-    //NVIC_SetPriority(DMA1_Stream5_IRQn, DMA1_STREAM5_PRIO);
-    //NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+    NVIC_SetPriority(DMA1_Stream5_IRQn, DMA1_STREAM5_PRIO);
+    NVIC_EnableIRQ(DMA1_Stream5_IRQn);
     // NVIC for USART
     NVIC_SetPriority(USART2_IRQn, USART2_IRQ_PRIO);
     NVIC_EnableIRQ(USART2_IRQn);

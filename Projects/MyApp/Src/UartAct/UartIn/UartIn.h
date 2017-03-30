@@ -34,6 +34,7 @@
 #include "stm32f4xx_hal.h"
 #include "qpcpp.h"
 #include "fw_evt.h"
+#include "fw_pipe.h"
 #include "hsm_id.h"
 
 using namespace QP;
@@ -48,6 +49,8 @@ public:
       QHsm::init(); 
     }
 
+    static void DmaCompleteCallback(uint8_t id);
+    static void DmaHalfCompleteCallback(uint8_t id);
     static void RxCallback(uint8_t id);
 
 protected:
@@ -55,6 +58,10 @@ protected:
     static QState Root(UartIn * const me, QEvt const * const e);
         static QState Stopped(UartIn * const me, QEvt const * const e);
         static QState Started(UartIn * const me, QEvt const * const e);
+          static QState Failed(UartIn * const me, QEvt const * const e);
+          static QState Normal(UartIn * const me, QEvt const * const e);
+            static QState Inactive(UartIn * const me, QEvt const * const e);
+            static QState Active(UartIn * const me, QEvt const * const e);
 
     void EnableRxInt();
     void DisableRxInt();
@@ -65,7 +72,13 @@ protected:
     QActive *m_owner;
     
     UART_HandleTypeDef &m_hal;
-    QTimeEvt m_stateTimer;
+    Fifo *m_fifo;
+    bool m_dataRecv;
+    QTimeEvt m_activeTimer;
+    
+    enum{
+        ACTIVE_TIMER_MS = 50
+    };
 };
 
 } // namespace APP

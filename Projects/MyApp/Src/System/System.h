@@ -74,7 +74,9 @@ protected:
     
     enum {
         UART_OUT_FIFO_ORDER = 11,
-        UART_IN_FIFO_ORDER = 10
+        // Gallium - set rx fifo to 8-byte for testing.
+        //UART_IN_FIFO_ORDER = 10
+        UART_IN_FIFO_ORDER = 3
     };
     uint8_t m_uart2OutFifoStor[1 << UART_OUT_FIFO_ORDER];
     uint8_t m_uart2InFifoStor[1 << UART_IN_FIFO_ORDER];

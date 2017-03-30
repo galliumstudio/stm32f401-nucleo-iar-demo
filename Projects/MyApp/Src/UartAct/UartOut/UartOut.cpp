@@ -29,7 +29,7 @@
 
 #include "hsm_id.h"
 #include "fw_log.h"
-#include "fw_evt.h"
+#include "fw_pipe.h"
 #include "UartAct.h"
 #include "UartOut.h"
 #include "event.h"

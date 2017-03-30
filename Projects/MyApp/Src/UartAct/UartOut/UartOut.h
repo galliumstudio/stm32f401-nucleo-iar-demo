@@ -34,6 +34,7 @@
 #include "stm32f4xx_hal.h"
 #include "qpcpp.h"
 #include "fw_evt.h"
+#include "fw_pipe.h"
 #include "hsm_id.h"
 
 using namespace QP;

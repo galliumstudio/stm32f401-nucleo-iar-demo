@@ -86,6 +86,15 @@ void DMA1_Stream6_IRQHandler(void) {
     QXK_ISR_EXIT();
 }
 
+// UART2 RX DMA
+// Must be declared as extern "C" in header.
+void DMA1_Stream5_IRQHandler(void) {
+    QXK_ISR_ENTRY();
+    UART_HandleTypeDef *hal = UartAct::GetHal(UART2_ACT);
+    HAL_DMA_IRQHandler(hal->hdmarx);
+    QXK_ISR_EXIT();
+}
+
 // UART2 RX
 // Must be declared as extern "C" in header.
 void USART2_IRQHandler(void)
@@ -98,6 +107,8 @@ void USART2_IRQHandler(void)
         // Note - ORE will trigger interrupt when RXNE interrupt is enabled.
         uint32_t rxdata = READ_REG(hal->Instance->DR);
     } else {
+        // Do not check RXNEIE bit as it may have been cleared automatically by DMA.
+        // It is okay to not check as we don't use other UART interrupts.
         // Disable interrupt to avoid re-entering ISR before event is processed.
         CLEAR_BIT(hal->Instance->CR1, USART_CR1_RXNEIE);
         UartIn::RxCallback(UART2_IN);

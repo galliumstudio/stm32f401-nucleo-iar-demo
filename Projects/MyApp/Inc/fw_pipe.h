@@ -88,6 +88,7 @@ public:
     uint32_t GetWriteAddr() { return GetAddr(m_writeIndex); }
     uint32_t GetReadAddr() { return GetAddr(m_readIndex); }
     uint32_t GetMaxAddr() { return GetAddr(m_mask); }
+    uint32_t GetBufSize() { return (m_mask + 1); }
     void IncWriteIndex(uint32_t count) {
         QF_CRIT_STAT_TYPE crit;
         QF_CRIT_ENTRY(crit);
