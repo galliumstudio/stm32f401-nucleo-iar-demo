@@ -166,6 +166,7 @@ QState UartIn::Started(UartIn * const me, QEvt const * const e) {
             Evt *evt = new UartInCharInd(me->m_nextSequence++, ch);
             QF::PUBLISH(evt, me);
             me->EnableRxInt();
+            status = Q_HANDLED();
             break;
         }
         default: {
