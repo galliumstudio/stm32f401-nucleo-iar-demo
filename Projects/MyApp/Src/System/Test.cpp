@@ -26,3 +26,28 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
+
+#include "Test.h"
+
+using namespace FW;
+
+//Q_DEFINE_THIS_FILE
+
+namespace APP {
+
+void TestFunction() {
+    TestClass testObj(1,2);
+    PRINT("testObj contains %d %d.\n\r", testObj.GetA(), testObj.GetB()); 
+    PRINT("Sum = %d.\n\r", testObj.Sum()); 
+    
+    TestBase tb(100);
+    TestDerived1 td1;
+    TestBase *pb;
+    pb = &tb;
+    pb->Print();
+    pb = &td1;
+    pb->Print();
+    //Q_ASSERT(0);
+}  
+
+} // namespace APP

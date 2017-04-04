@@ -30,12 +30,42 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include "bsp.h"
 #include <stdint.h>
 #include "fw_log.h"
+#include "qassert.h"
+
+//#define TEST_ASSERT(t_) ((t_)? (void)0: Q_onAssert("Test.h", (int_t)__LINE__))
 
 using namespace FW;
 
 namespace APP {
+
+void TestFunction();
+  
+// Before C++...
+typedef struct {
+    uint32_t a;
+    uint32_t b;
+} TestStruct;
+
+uint32_t TestSum(TestStruct *ts);
+uint32_t TestSub(TestStruct *ts);
+  
+// With C++ Encapsulation
+class TestClass {
+private:
+    uint32_t m_a;
+    uint32_t m_b;    
+public:
+  TestClass(uint32_t a, uint32_t b) : m_a(a), m_b(b) {}
+  uint32_t GetA() const { return m_a; }
+  uint32_t GetB() const { return m_b; }
+  uint32_t Sum() const { return m_a + m_b; }
+};
+  
+
+// With C++ Inheritance and Polymorphism.
 class TestBase {
 public:
   TestBase(uint32_t id = 0) : m_id(id) {}

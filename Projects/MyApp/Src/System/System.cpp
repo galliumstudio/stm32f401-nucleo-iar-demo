@@ -411,12 +411,16 @@ QState System::Started(System * const me, QEvt const * const e) {
             break;
         }
         case SYSTEM_TEST_TIMER: {
-            //LOG_EVENT(e);
+            //LOG_EVENT(e);          
+            /*
             static int testcount = 10000;
             char msg[100];
             snprintf(msg, sizeof(msg), "This is a UART DMA transmission testing number %d.", testcount++);
             DEBUG("Writing %s", msg);
+            */
+            
             // C++ test function.
+            /*
             TestBase tb(100);
             TestDerived1 td1;
             TestBase *pb;
@@ -424,6 +428,7 @@ QState System::Started(System * const me, QEvt const * const e) {
             pb->Print();
             pb = &td1;
             pb->Print();
+            */
             
             status = Q_HANDLED();
             break;
@@ -451,6 +456,9 @@ QState System::Started(System * const me, QEvt const * const e) {
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             DEBUG("Rx char %c", ind.GetChar());
+            
+            TestFunction();
+                       
             status = Q_HANDLED();
             break;
         }
