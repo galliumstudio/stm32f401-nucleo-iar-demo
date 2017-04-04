@@ -419,17 +419,6 @@ QState System::Started(System * const me, QEvt const * const e) {
             DEBUG("Writing %s", msg);
             */
             
-            // C++ test function.
-            /*
-            TestBase tb(100);
-            TestDerived1 td1;
-            TestBase *pb;
-            pb = &tb;
-            pb->Print();
-            pb = &td1;
-            pb->Print();
-            */
-            
             status = Q_HANDLED();
             break;
         }
