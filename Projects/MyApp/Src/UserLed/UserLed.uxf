@@ -52,10 +52,10 @@ valign=top
 --
 entry/ BSP_LED_Init(LED2)
 exit/ BSP_LED_DeInit(LED2)
-USER_LED_ON_REQ/
-  ^USER_LED_ON_CFM(SUCCESS), BSP_LED_On(LED2)
-USER_LED_OFF_REQ/
-  ^USER_LED_OFF_CFM(SUCCESS), BSP_LED_Off(LED2);
+USER_LED_ON_REQ
+/ ^USER_LED_ON_CFM(SUCCESS), BSP_LED_On(LED2)
+USER_LED_OFF_REQ
+/ ^USER_LED_OFF_CFM(SUCCESS), BSP_LED_Off(LED2)
 
 valign=top
 </panel_attributes>
@@ -71,8 +71,8 @@ valign=top
     </coordinates>
     <panel_attributes>Stopped
 --
-USER_LED_STOP_REQ/
-USER_LED_STOP_CFM(SUCCESS)
+USER_LED_STOP_REQ
+/ USER_LED_STOP_CFM(SUCCESS)
 
 valign=top
 </panel_attributes>
@@ -108,8 +108,8 @@ valign=top
       <w>210</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>USER_LED_START_REQ/
-USER_LED_START_CFM(SUCCESS)
+    <panel_attributes>USER_LED_START_REQ
+/ USER_LED_START_CFM(SUCCESS)
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>
@@ -121,8 +121,8 @@ style=wordwrap</panel_attributes>
       <w>210</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>USER_LED_STOP_REQ/
-USER_LED_STOP_CFM(SUCCESS)
+    <panel_attributes>USER_LED_STOP_REQ
+/ USER_LED_STOP_CFM(SUCCESS)
 style=wordwrap</panel_attributes>
     <additional_attributes/>
   </element>

@@ -31,3 +31,9 @@
 *.app
 *.map
 *.sim
+
+*.dep
+*.dbgdt
+*.dni
+*.wsdt
+*.wspos

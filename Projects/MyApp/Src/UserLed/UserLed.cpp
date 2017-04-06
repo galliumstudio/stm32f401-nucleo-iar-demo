@@ -32,6 +32,7 @@
 #include "fw_log.h"
 #include "UserLed.h"
 #include "event.h"
+#include "LedPattern.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -235,6 +236,13 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             if (HAL_TIM_PWM_Start(&me->m_timHandle, TIM_CHANNEL_1) != HAL_OK) {
                 Q_ASSERT(0);
             }
+            
+            // Test only.
+            /*
+            LedPatternSet const &p = TEST_LED_PATTERN_SET;
+            PRINT("%p %d\n\r", &p, p.m_pattern[1].m_interval[0].m_durationMs);
+            Q_ASSERT(0);
+            */
             
             status = Q_HANDLED();
             break;
