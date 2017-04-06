@@ -446,7 +446,10 @@ QState System::Started(System * const me, QEvt const * const e) {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             DEBUG("Rx char %c", ind.GetChar());
             
-            TestFunction();
+            //TestFunction();
+            // TODO - Assignment 1
+            // Add test code here to print out content of LED patterns you
+            // defined. Remember to include "LedPattern.h".
                        
             status = Q_HANDLED();
             break;
