@@ -33,10 +33,11 @@
 #include "hsm_id.h"
 #include "System.h"
 #include "event.h"
-// Test only.
-#include "Test.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
+// Test only.
+#include "Test.h"
+#include "LedPattern.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -446,8 +447,18 @@ QState System::Started(System * const me, QEvt const * const e) {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             DEBUG("Rx char %c", ind.GetChar());
             
-            TestFunction();
-                       
+            // Week 2 C++ test examples.
+            //TestFunction();
+            // LedPattern testing.
+            uint32_t patternIdx, intervalIdx;
+            for (patternIdx = 0; patternIdx < TEST_LED_PATTERN_SET.GetCount(); patternIdx++) {
+                DEBUG("LED Pattern %d", patternIdx);
+                LedPattern const &pattern = TEST_LED_PATTERN_SET.GetPattern(patternIdx);
+                for (intervalIdx = 0; intervalIdx < pattern.GetCount(); intervalIdx++) {
+                    LedInterval const &interval = pattern.GetInterval(intervalIdx);
+                    DEBUG("    interval[%d] = {%d, %d}", intervalIdx, interval.GetLevelPermil(), interval.GetDurationMs());
+                }
+            }                       
             status = Q_HANDLED();
             break;
         }

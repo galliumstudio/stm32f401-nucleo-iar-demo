@@ -32,7 +32,7 @@
 using namespace FW;
 
 // QP provided macro to define filename used by Q_ASSERT. 
-Q_DEFINE_THIS_FILE
+//Q_DEFINE_THIS_FILE
 
 namespace APP {
 
