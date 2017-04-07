@@ -104,7 +104,37 @@ enum {
     USER_LED_OFF_CFM,   
     USER_LED_STATE_TIMER,
     USER_LED_DONE,
-    
+
+    // Washing machine control simulator
+    USER_SIM_START_REQ,
+    USER_SIM_START_CFM,
+    USER_SIM_STOP_REQ,
+    USER_SIM_STOP_CFM,
+    OPEN_DOOR_IND,
+    CLOSE_DOOR_IND,
+    START_PAUSE_BUTTON_IND,
+    CYCLE_SELECTED_IND,
+
+    // Washing machine
+    WASH_START_REQ,
+    WASH_START_CFM,
+    WASH_STOP_REQ,
+    WASH_STOP_CFM,
+
+    // Internal washing machine events
+    iWASH_START,
+    iWASH_CLOSE,
+    iWASH_OPEN,
+    iWASH_DONE,
+    WASH_TIMEOUT,
+    RINSE_TIMEOUT,
+    SPIN_TIMEOUT,
+
+
+    // Washing machine sensor events
+    WASH_FILLED_IND,
+    WASH_DRAINED_IND,
+
     MAX_PUB_SIG
 };
 
@@ -369,6 +399,102 @@ public:
     UserLedOffCfm(uint16_t seq, Error error, Reason reason = 0) :
         ErrorEvt(USER_LED_OFF_CFM, seq, error, reason) {}
 };
+
+class UserSimStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserSimStartReq(uint16_t seq) :
+        Evt(USER_SIM_START_REQ, seq) {}
+};
+
+class UserSimStartCfm : public ErrorEvt {
+public:
+    UserSimStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_SIM_START_CFM, seq, error, reason) {}
+};
+
+class UserSimStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserSimStopReq(uint16_t seq) :
+        Evt(USER_SIM_STOP_REQ, seq) {}
+};
+
+class UserSimStopCfm : public ErrorEvt {
+public:
+    UserSimStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_SIM_STOP_CFM, seq, error, reason) {}
+};
+
+
+class UserSimOpenDoorInd : public Evt {
+public:
+    UserSimOpenDoorInd() :
+        Evt(OPEN_DOOR_IND) {}
+};
+
+class UserSimCloseDoorInd : public Evt {
+public:
+    UserSimCloseDoorInd() :
+        Evt(CLOSE_DOOR_IND) {}
+};
+
+class UserSimStartPauseInd : public Evt {
+public:
+    UserSimStartPauseInd() :
+        Evt(START_PAUSE_BUTTON_IND) {}
+};
+
+class UserSimCycleSelectedInd : public Evt {
+public:
+    typedef enum {
+        NORMAL,
+        DELICATE,
+        BULKY,
+        TOWELS
+    } CycleType;
+    UserSimCycleSelectedInd(CycleType cycle) :
+        Evt(CYCLE_SELECTED_IND), m_cycleType(cycle) {}
+    CycleType GetCycleType() const { return m_cycleType; }
+private:
+    CycleType m_cycleType;
+};
+
+class WashStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    WashStartReq(uint16_t seq) :
+        Evt(WASH_START_REQ, seq) {}
+};
+
+class WashStartCfm : public ErrorEvt {
+public:
+    WashStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(WASH_START_CFM, seq, error, reason) {}
+};
+
+class WashStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    WashStopReq(uint16_t seq) :
+        Evt(WASH_STOP_REQ, seq) {}
+};
+
+class WashStopCfm : public ErrorEvt {
+public:
+    WashStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(WASH_STOP_CFM, seq, error, reason) {}
+};
+
+
 
 }
 

@@ -39,6 +39,8 @@ enum {
     UART2_OUT,
     USER_BTN,
     USER_LED,
+    USER_SIM,
+    WASH,
     HSM_COUNT
 };
 
@@ -51,6 +53,8 @@ enum
     PRIO_SYSTEM     = 26,
     PRIO_USER_BTN   = 24,
     PRIO_USER_LED   = 22,
+    PRIO_USER_SIM   = 18,
+    PRIO_WASH       = 12,
     PRIO_SAMPLE     = 5
 };
 

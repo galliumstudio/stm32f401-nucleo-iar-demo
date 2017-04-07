@@ -44,6 +44,8 @@
 #include "UartAct.h"
 #include "UserBtn.h"
 #include "UserLed.h"
+#include "AOUserCtrlSimulator.h"
+#include "AOWashingMachine.h"
 #include "event.h"
 #include "bsp.h"
 #include "qpcpp.h"
@@ -81,6 +83,8 @@ static System sys;
 static UartAct uart2Act(UART2_ACT, "UART2_ACT", "UART2_IN", "UART2_OUT", USART2);
 static UserBtn userBtn;
 static UserLed userLed;
+static AOUserCtrlSimulator aoUserCtrlSim;
+static AOWashingMachine aoWashingMachine;
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
@@ -112,6 +116,9 @@ int main(void)
     uart2Act.Start(PRIO_UART2_ACT);
     userBtn.Start(PRIO_USER_BTN);
     userLed.Start(PRIO_USER_LED);
+    aoUserCtrlSim.Start(PRIO_USER_SIM);
+    aoWashingMachine.Start(PRIO_WASH);
+
     sys.Start(PRIO_SYSTEM);
     Evt *evt = new SystemStartReq(0);
     QF::PUBLISH(evt, dummy);

@@ -73,7 +73,11 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(USER_LED_START_CFM);
     me->subscribe(USER_LED_ON_CFM);
     me->subscribe(USER_LED_OFF_CFM);
-      
+    me->subscribe(USER_SIM_START_CFM);
+    me->subscribe(USER_SIM_STOP_CFM);
+    me->subscribe(WASH_START_CFM);
+    me->subscribe(WASH_STOP_CFM);
+
     return Q_TRAN(&System::Root);
 }
 
@@ -218,6 +222,8 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStartReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStartReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStartReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > UserSimStartReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > WashStartReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
             
@@ -227,6 +233,15 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             evt = new UserBtnStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
+
+            evt = new UserSimStartReq(me->m_nextSequence++);
+            // TODO - Save sequence number for comparison.
+            QF::PUBLISH(evt, me);
+
+            evt = new WashStartReq(me->m_nextSequence++);
+            // TODO - Save sequence number for comparison.
+            QF::PUBLISH(evt, me);
+
             status = Q_HANDLED();
             break;
         }
@@ -237,7 +252,9 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             break;
         }
         case USER_LED_START_CFM:
-        case USER_BTN_START_CFM: {
+        case USER_BTN_START_CFM:
+        case USER_SIM_START_CFM:
+        case WASH_START_CFM: {
             LOG_EVENT(e);
             me->HandleCfm(ERROR_EVT_CAST(*e), 2);
             status = Q_HANDLED();
@@ -341,12 +358,18 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStopReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStopReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStopReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > UserSimStopReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > WashStopReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
 
             Evt *evt = new UserLedStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             evt = new UserBtnStopReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
+            evt = new UserSimStopReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
+            evt = new WashStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
@@ -367,7 +390,9 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             break;
         }
         case USER_LED_STOP_CFM:
-        case USER_BTN_STOP_CFM: {
+        case USER_BTN_STOP_CFM:
+        case USER_SIM_STOP_CFM:
+        case WASH_STOP_CFM: {
             LOG_EVENT(e);
             me->HandleCfm(ERROR_EVT_CAST(*e), 2);
             status = Q_HANDLED();
@@ -399,7 +424,7 @@ QState System::Started(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->m_testTimer.armX(2000, 2000);   
+            //me->m_testTimer.armX(2000, 2000);
             status = Q_HANDLED();
             break;
         }

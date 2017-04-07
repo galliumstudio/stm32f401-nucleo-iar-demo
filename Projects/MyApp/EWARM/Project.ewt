@@ -1738,6 +1738,21 @@
           <name>$PROJ_DIR$\..\Src\UserLed\UserLed.h</name>
         </file>
       </group>
+      <group>
+        <name>WashingMachine</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\WashingMachine\AOUserCtrlSimulator.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\WashingMachine\AOUserCtrlSimulator.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\WashingMachine\AOWashingMachine.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\WashingMachine\AOWashingMachine.h</name>
+        </file>
+      </group>
       <file>
         <name>$PROJ_DIR$\..\Src\bsp.cpp</name>
       </file>

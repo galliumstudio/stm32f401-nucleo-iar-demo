@@ -30,6 +30,7 @@
 #include "qpcpp.h"
 #include "event.h"
 #include "fw_macro.h"
+#include "fw_log.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -104,12 +105,46 @@ char const * const eventName[] = {
     "USER_LED_OFF_CFM", 
     "USER_LED_STATE_TIMER",
     "USER_LED_DONE",
-};  
-  
+
+    // Washing machine control simulator
+    "USER_SIM_START_REQ",
+    "USER_SIM_START_CFM",
+    "USER_SIM_STOP_REQ",
+    "USER_SIM_STOP_CFM",
+    "OPEN_DOOR_IND",
+    "CLOSE_DOOR_IND",
+    "START_PAUSE_BUTTON_IND",
+    "CYCLE_SELECTED_IND",
+
+    // Washing machine
+    "WASH_START_REQ",
+    "WASH_START_CFM",
+    "WASH_STOP_REQ",
+    "WASH_STOP_CFM",
+
+    // Internal washing machine events
+    "iWASH_START",
+    "iWASH_CLOSE",
+    "iWASH_OPEN",
+    "iWASH_DONE",
+    "WASH_TIMEOUT",
+    "RINSE_TIMEOUT",
+    "SPIN_TIMEOUT",
+    
+    // Washing machine sensor events
+    "WASH_FILLED_IND",
+    "WASH_DRAINED_IND",
+
+
+};
+
 char const * GetEvtName(QP::QSignal sig) {
+    if (sig >= ARRAY_COUNT(eventName)) {
+        PRINT("Assert: eventName array does not match enum in event.h!\r\n");
+    }
     Q_ASSERT(sig < ARRAY_COUNT(eventName));
     if (sig < MAX_PUB_SIG) {
-      return eventName[sig];
+        return eventName[sig];
     }
     return "(UNKNOWN)";
 }
