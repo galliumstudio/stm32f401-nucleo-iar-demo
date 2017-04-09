@@ -928,8 +928,8 @@ void AOWashingMachine::PrintCycleParams()
     PRINT("\r\n");
     PRINT("    Wash time = %d s\r\n", m_cycleParams.washTime/1000);
     PRINT("    Rinse time = %d s\r\n", m_cycleParams.rinseTime/1000);
-    PRINT("    Wash temperature = %d s\r\n", m_cycleParams.washTemperature);
-    PRINT("    Rinse temperature = %d s\r\n", m_cycleParams.rinseTemperature);
+    PRINT("    Wash temperature = %d F\r\n", m_cycleParams.washTemperature);
+    PRINT("    Rinse temperature = %d F\r\n", m_cycleParams.rinseTemperature);
     PRINT("\r\n");
 }
 
