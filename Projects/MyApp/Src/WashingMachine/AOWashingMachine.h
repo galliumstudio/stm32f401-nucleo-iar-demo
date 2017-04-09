@@ -65,6 +65,7 @@ protected:
                     static QState Rinsing(AOWashingMachine * const me, QEvt const * const e);
                     static QState DrainingRinse(AOWashingMachine * const me, QEvt const * const e);
                     static QState Spinning(AOWashingMachine * const me, QEvt const * const e);
+                    static QState Delay(AOWashingMachine * const me, QEvt const * const e);
 
     // Helper functions
     uint8_t CheckDoorSensor();
