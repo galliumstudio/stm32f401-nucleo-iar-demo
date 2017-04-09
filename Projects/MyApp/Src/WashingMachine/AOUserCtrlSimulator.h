@@ -1,6 +1,7 @@
 /*******************************************************************************
  * Copyright (C) Lawrence Lo (https://github.com/galliumstudio).
  * All rights reserved.
+ * Author: Katie Elliott
  *
  * This program is open source software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published
@@ -67,6 +68,9 @@ protected:
     uint16_t m_nextSequence;
     QActive *m_owner;
 
+    // Helper methods
+    void PrintCommands();
+    
 };
 
 } // namespace APP

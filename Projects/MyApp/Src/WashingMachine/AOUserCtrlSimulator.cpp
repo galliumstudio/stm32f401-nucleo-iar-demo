@@ -2,6 +2,8 @@
  * Copyright (C) Lawrence Lo (https://github.com/galliumstudio).
  * All rights reserved.
  *
+ * Author: Katie Elliott
+ *
  * This program is open source software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
@@ -31,6 +33,12 @@
 #include "fw_log.h"
 #include "AOUserCtrlSimulator.h"
 #include "event.h"
+
+#undef LOG_EVENT
+#define LOG_EVENT(e)            
+#undef DEBUG
+#define DEBUG(x, y)
+
 
 //Q_DEFINE_THIS_FILE
 
@@ -179,15 +187,7 @@ QState AOUserCtrlSimulator::Started(AOUserCtrlSimulator * const me, QEvt const *
     QState status;
     switch (e->sig) {
         case Q_ENTRY_SIG: {
-            //LOG_EVENT(e);
-            PRINT("\r\nWashing machine simulator. Use the following commands to simulate washing.\r\n");
-            PRINT("    o - Opens the door\r\n");
-            PRINT("    c - Closes the door\r\n");
-            PRINT("    s - Start/Pause button\r\n");
-            PRINT("    n - Select wash NORMAL\r\n");
-            PRINT("    d - Select wash DELICATE\r\n");
-            PRINT("    b - Select wash BULKY\r\n");
-            PRINT("    t - Select wash TOWELS\r\n\r\n");
+            LOG_EVENT(e);
             status = Q_HANDLED();
             break;
         }
@@ -259,6 +259,11 @@ QState AOUserCtrlSimulator::Started(AOUserCtrlSimulator * const me, QEvt const *
                     QF::PUBLISH(evt, me);
                     break;
                 }
+                case '?':
+                {
+                    me->PrintCommands();
+                    break;
+                }
             }
             status = Q_HANDLED();
             break;
@@ -269,6 +274,24 @@ QState AOUserCtrlSimulator::Started(AOUserCtrlSimulator * const me, QEvt const *
         }
     }
     return status;
+}
+
+
+/**
+ * Print commands the user can use to simulate the washing machine operations.
+ */
+void AOUserCtrlSimulator::PrintCommands()
+{
+    PRINT("\r\nWashing machine simulator. Use the following commands to simulate washing.\r\n");
+    PRINT("    o - Opens the door\r\n");
+    PRINT("    c - Closes the door\r\n");
+    PRINT("    s - Start/Pause button\r\n");
+    PRINT("    n - Select wash NORMAL\r\n");
+    PRINT("    d - Select wash DELICATE\r\n");
+    PRINT("    b - Select wash BULKY\r\n");
+    PRINT("    t - Select wash TOWELS\r\n");
+    PRINT("    ? - Print this message\r\n\r\n");
+    
 }
 
 } // namespace APP

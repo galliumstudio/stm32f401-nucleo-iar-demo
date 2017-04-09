@@ -38,6 +38,12 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
 
+#undef LOG_EVENT
+#define LOG_EVENT(e)            
+#undef DEBUG
+#define DEBUG(x, y)
+
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
