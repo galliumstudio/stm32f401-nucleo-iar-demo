@@ -188,6 +188,7 @@ QState AOUserCtrlSimulator::Started(AOUserCtrlSimulator * const me, QEvt const *
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+            me->PrintCommands();
             status = Q_HANDLED();
             break;
         }
