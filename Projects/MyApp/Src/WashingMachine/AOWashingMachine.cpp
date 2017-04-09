@@ -40,23 +40,23 @@
 
 
 // Constants used within this file.
-static const uint16_t NORMAL_WASH_TIME_MS = 1000; 
-static const uint16_t NORMAL_RINSE_TIME_MS = 1000; 
+static const uint16_t NORMAL_WASH_TIME_MS = 3000; 
+static const uint16_t NORMAL_RINSE_TIME_MS = 3000; 
 static const uint16_t NORMAL_WASH_TEMP = 100;  // Degrees F
 static const uint16_t NORMAL_RINSE_TEMP = 100; // Degrees F
 
-static const uint16_t DELICATE_WASH_TIME_MS = 1000; 
-static const uint16_t DELICATE_RINSE_TIME_MS = 1000;
+static const uint16_t DELICATE_WASH_TIME_MS = 3000; 
+static const uint16_t DELICATE_RINSE_TIME_MS = 3000;
 static const uint16_t DELICATE_WASH_TEMP = 70;  // Degrees F
 static const uint16_t DELICATE_RINSE_TEMP = 70; // Degrees F
 
-static const uint16_t BULKY_WASH_TIME_MS = 5000;
-static const uint16_t BULKY_RINSE_TIME_MS = 5000;
+static const uint16_t BULKY_WASH_TIME_MS = 10000;
+static const uint16_t BULKY_RINSE_TIME_MS = 10000;
 static const uint16_t BULKY_WASH_TEMP = 100;  // Degrees F
 static const uint16_t BULKY_RINSE_TEMP = 100; // Degrees F
 
-static const uint16_t TOWELS_WASH_TIME_MS = 2000;
-static const uint16_t TOWELS_RINSE_TIME_MS = 2000;
+static const uint16_t TOWELS_WASH_TIME_MS = 6000;
+static const uint16_t TOWELS_RINSE_TIME_MS = 6000;
 static const uint16_t TOWELS_WASH_TEMP = 150;  // Degrees F
 static const uint16_t TOWELS_RINSE_TEMP = 150; // Degrees F
 
@@ -104,10 +104,6 @@ QState AOWashingMachine::InitialPseudoState(AOWashingMachine * const me, QEvt co
 
     me->subscribe(WASH_START_REQ);
     me->subscribe(WASH_STOP_REQ);
-    me->subscribe(iWASH_START);
-    me->subscribe(iWASH_DONE);
-    me->subscribe(iWASH_CLOSE);
-    me->subscribe(iWASH_OPEN);
     me->subscribe(WASH_FILLED_IND);
     me->subscribe(WASH_DRAINED_IND);
     me->subscribe(CYCLE_SELECTED_IND);
