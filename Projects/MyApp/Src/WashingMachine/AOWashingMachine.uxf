@@ -69,7 +69,7 @@ valign=top
 --
 entry / m_doorState = OPEN
 START_PAUSE_BUTTON_IND / ErrorBeep()
-CLOSE_DOOR_IND / ^iCLOSE
+CLOSE_DOOR_IND / ^iWASH_CLOSE
 
     
 valign=top
