@@ -316,7 +316,7 @@ valign=top
     </coordinates>
     <panel_attributes>Washing
 --
-entry / history = &amp;Washing, StartTimer()
+entry / history = &amp;Washing, start timer
         StartWashing(cycleParameters)
 exit / disarm timer, StopWashing(), StartDraining()    
 valign=top
@@ -349,7 +349,7 @@ valign=top
     </coordinates>
     <panel_attributes>Spinning
 --
-entry / history = &amp;Spinning, StartTimer()
+entry / history = &amp;Spinning, start timer
         StartSpinning()
 SPIN_TIMEOUT / history = &amp;FillingWash, ^iDONE
 exit / disarm timer, StopSpinning(), 
@@ -387,7 +387,7 @@ valign=top
     </coordinates>
     <panel_attributes>Rinsing
 --
-entry / history = &amp;Rinsing, StartTimer()
+entry / history = &amp;Rinsing, start timer
         StartRinsing(cycleParameters)
 exit / disarm timer, StopRinsing(), StartDraining()     
     
