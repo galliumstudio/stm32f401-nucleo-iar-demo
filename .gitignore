@@ -5,6 +5,7 @@
 *.obj
 *.xcl
 *.pbi
+*.dep
 
 # Precompiled Headers
 *.gch
@@ -31,3 +32,7 @@
 *.app
 *.map
 *.sim
+
+# Output directories
+/Projects/MyApp/EWARM/settings
+/Projects/MyApp/EWARM/STM32F4xx-Nucleo
