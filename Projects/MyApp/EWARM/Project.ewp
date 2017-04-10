@@ -264,11 +264,11 @@
         </option>
         <option>
           <name>IExtraOptionsCheck</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IExtraOptions</name>
-          <state></state>
+          <state>--no_path_in_file_macros</state>
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -1558,6 +1558,12 @@
       </group>
       <group>
         <name>UserLed</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\UserLed\LedPattern.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\UserLed\LedPattern.h</name>
+        </file>
         <file>
           <name>$PROJ_DIR$\..\Src\UserLed\stm32f4xx_hal_pwm_msp.c</name>
         </file>

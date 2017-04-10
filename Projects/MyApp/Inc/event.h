@@ -98,11 +98,13 @@ enum {
     USER_LED_START_CFM,
     USER_LED_STOP_REQ,
     USER_LED_STOP_CFM,
-    USER_LED_ON_REQ,
-    USER_LED_ON_CFM,
+    USER_LED_ON_REQ,            // Deprecated
+    USER_LED_ON_CFM,            // Deprecated
+    USER_LED_PATTERN_REQ,
+    USER_LED_PATTERN_CFM,
     USER_LED_OFF_REQ,
     USER_LED_OFF_CFM,   
-    USER_LED_STATE_TIMER,
+    USER_LED_INTERVAL_TIMER,
     USER_LED_DONE,
 
     // Washing machine control simulator
@@ -383,6 +385,27 @@ class UserLedOnCfm : public ErrorEvt {
 public:
     UserLedOnCfm(uint16_t seq, Error error, Reason reason = 0) :
         ErrorEvt(USER_LED_ON_CFM, seq, error, reason) {}
+};
+
+class UserLedPatternReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserLedPatternReq(uint16_t seq, uint32_t patternIndex, bool isRepeat = false) :
+        Evt(USER_LED_PATTERN_REQ, seq), m_patternIndex(patternIndex), m_isRepeat(isRepeat) {}
+        
+    uint32_t GetPatternIndex() const { return m_patternIndex; }
+    bool IsRepeat() const { return m_isRepeat; }
+private:
+    uint32_t m_patternIndex;
+    bool m_isRepeat;
+};
+
+class UserLedPatternCfm : public ErrorEvt {
+public:
+    UserLedPatternCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_LED_PATTERN_CFM, seq, error, reason) {}
 };
 
 class UserLedOffReq : public Evt {

@@ -33,6 +33,12 @@
 *.map
 *.sim
 
+*.dep
+*.dbgdt
+*.dni
+*.wsdt
+*.wspos
+
 # Output directories
 /Projects/MyApp/EWARM/settings
 /Projects/MyApp/EWARM/STM32F4xx-Nucleo
