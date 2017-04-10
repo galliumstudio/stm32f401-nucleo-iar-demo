@@ -34,6 +34,7 @@
 #include "fw_evt.h"
 #include "hsm_id.h"
 #include "bsp.h"
+#include "LedPattern.h"
 
 using namespace QP;
 using namespace FW;
@@ -52,8 +53,16 @@ protected:
     static QState Root(UserLed * const me, QEvt const * const e);
         static QState Stopped(UserLed * const me, QEvt const * const e);
         static QState Started(UserLed * const me, QEvt const * const e);
-    
-    bool ConfigPwm();
+            static QState Idle(UserLed * const me, QEvt const * const e);
+            static QState Active(UserLed * const me, QEvt const * const e);
+                static QState Repeating(UserLed * const me, QEvt const * const e);
+                static QState Once(UserLed * const me, QEvt const * const e);
+        
+    void InitPwm();
+    void DeInitPwm();
+    void ConfigPwm(uint32_t levelPermil);
+    void StartPwm();
+    void StopPwm();
         
     enum {
         EVT_QUEUE_COUNT = 16
@@ -63,8 +72,12 @@ protected:
     char const * m_name;
     uint16_t m_nextSequence;
     TIM_HandleTypeDef m_timHandle;
+    TIM_OC_InitTypeDef m_timConfig;
+    LedPattern const *m_currPattern;
+    uint32_t m_intervalIndex;
+    bool m_isRepeat;
     
-    QTimeEvt m_stateTimer;
+    QTimeEvt m_intervalTimer;
 };
 
 } // namespace APP

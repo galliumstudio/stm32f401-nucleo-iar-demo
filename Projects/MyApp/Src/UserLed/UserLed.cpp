@@ -38,11 +38,32 @@ Q_DEFINE_THIS_FILE
 
 namespace APP {
 
-#define  PERIOD_VALUE       (uint32_t)(1000 - 1)  /* Period Value  */
-#define  PULSE1_VALUE       (uint32_t)((PERIOD_VALUE + 1)/2) /* Capture Compare 1 Value  */
+#define  PERIOD_VALUE           (uint32_t)(1000 - 1)  /* Period Value  */
+#define  DEFAULT_LEVEL_PERMIL   (uint32_t)((PERIOD_VALUE + 1)/2) /* Capture Compare 1 Value  */
   
-bool UserLed::ConfigPwm() {  
-    TIM_OC_InitTypeDef timConfig;
+// User LED uses PA.05 (TIM2_CH1)
+void UserLed::InitPwm() {
+    // Initialize GPIO pin and clocks.
+    GPIO_InitTypeDef   GPIO_InitStruct;
+    /*##-1- Enable peripherals and GPIO Clocks #################################*/
+    /* TIMx Peripheral clock enable */
+    __HAL_RCC_TIM2_CLK_ENABLE();
+
+    /* Enable all GPIO Channels Clock requested */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    /* Configure PA.05 (TIM3_Channel1) in output, push-pull, alternate function mode
+    */
+    /* Common configuration for all channels */
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+
+    GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    
+    // Initialize PWM timer.
     /* Compute the prescaler value to have TIM3 counter clock equal to 21000000 Hz */
     uint32_t uhPrescalerValue = (uint32_t)((SystemCoreClock) / 21000000) - 1;
 
@@ -86,37 +107,53 @@ bool UserLed::ConfigPwm() {
          + Counter direction = Up
     */
     m_timHandle.Instance = TIM2;
-
     m_timHandle.Init.Prescaler         = uhPrescalerValue;
     m_timHandle.Init.Period            = PERIOD_VALUE;
     m_timHandle.Init.ClockDivision     = 0;
     m_timHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
     m_timHandle.Init.RepetitionCounter = 0;
     if (HAL_TIM_PWM_Init(&m_timHandle) != HAL_OK) {
-        return false;
+        Q_ASSERT(0);
     }
-
+    
     /*##-2- Configure the PWM channels #########################################*/
     /* Common configuration for all channels */
-    timConfig.OCMode       = TIM_OCMODE_PWM1;
-    timConfig.OCPolarity   = TIM_OCPOLARITY_HIGH;
-    timConfig.OCFastMode   = TIM_OCFAST_DISABLE;
-    timConfig.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
-    timConfig.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    timConfig.OCIdleState  = TIM_OCIDLESTATE_RESET;
+    m_timConfig.OCMode       = TIM_OCMODE_PWM1;
+    m_timConfig.OCPolarity   = TIM_OCPOLARITY_HIGH;
+    m_timConfig.OCFastMode   = TIM_OCFAST_DISABLE;
+    m_timConfig.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
+    m_timConfig.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+    m_timConfig.OCIdleState  = TIM_OCIDLESTATE_RESET;    
+}        
+    
+void UserLed::DeInitPwm() {
+    // TODO
+}
 
-    /* Set the pulse value for channel 1 */
-    timConfig.Pulse = PULSE1_VALUE;
-    if (HAL_TIM_PWM_ConfigChannel(&m_timHandle, &timConfig, TIM_CHANNEL_1) != HAL_OK) {
-        return false;
+void UserLed::ConfigPwm(uint32_t levelPermil) {  
+    m_timConfig.Pulse = levelPermil;
+    if (HAL_TIM_PWM_ConfigChannel(&m_timHandle, &m_timConfig, TIM_CHANNEL_1) != HAL_OK) {
+        Q_ASSERT(0);
     }
-    return true;
+}
+
+void UserLed::StartPwm() {
+    if (HAL_TIM_PWM_Start(&m_timHandle, TIM_CHANNEL_1) != HAL_OK) {
+        Q_ASSERT(0);
+    }
+}
+
+void UserLed::StopPwm() {
+    if (HAL_TIM_PWM_Stop(&m_timHandle, TIM_CHANNEL_1) != HAL_OK) {
+        Q_ASSERT(0);
+    }            
 }
   
 UserLed::UserLed() :
     QActive((QStateHandler)&UserLed::InitialPseudoState),
     m_id(USER_LED), m_name("USER_LED"), m_nextSequence(0), 
-    m_stateTimer(this, USER_LED_STATE_TIMER) {}
+    m_currPattern(NULL), m_intervalIndex(0), m_isRepeat(false),
+    m_intervalTimer(this, USER_LED_INTERVAL_TIMER) {}
 
 QState UserLed::InitialPseudoState(UserLed * const me, QEvt const * const e) {
     (void)e;
@@ -124,9 +161,12 @@ QState UserLed::InitialPseudoState(UserLed * const me, QEvt const * const e) {
     me->subscribe(USER_LED_START_REQ);
     me->subscribe(USER_LED_STOP_REQ);
     me->subscribe(USER_LED_ON_REQ);
+    me->subscribe(USER_LED_PATTERN_REQ);
     me->subscribe(USER_LED_OFF_REQ);  
-    me->subscribe(USER_LED_STATE_TIMER);
+    me->subscribe(USER_LED_INTERVAL_TIMER);
     me->subscribe(USER_LED_DONE);
+    me->subscribe(USER_LED_NEXT_INTERVAL);
+    me->subscribe(USER_LED_LAST_INTERVAL);
     
     return Q_TRAN(&UserLed::Root);
 }
@@ -207,15 +247,20 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);       
             BSP_LED_Init(LED2);
-            bool status = me->ConfigPwm();
-            Q_ASSERT(status);
+            me->InitPwm();
+            me->ConfigPwm(DEFAULT_LEVEL_PERMIL);          
             status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-            BSP_LED_DeInit(LED2);
+            me->StopPwm();
+            me->DeInitPwm();
             status = Q_HANDLED();
+            break;
+        }
+        case Q_INIT_SIG: {
+            status = Q_TRAN(&UserLed::Idle);
             break;
         }
         case USER_LED_STOP_REQ: {
@@ -226,6 +271,7 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             status = Q_TRAN(&UserLed::Stopped);
             break;
         }
+        /*
         case USER_LED_ON_REQ: {
             LOG_EVENT(e);
             Evt const &req = EVT_CAST(*e);
@@ -233,17 +279,9 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
             
             //BSP_LED_On(LED2);
-            if (HAL_TIM_PWM_Start(&me->m_timHandle, TIM_CHANNEL_1) != HAL_OK) {
-                Q_ASSERT(0);
-            }
-            
-            // Test only.
-            /*
-            LedPatternSet const &p = TEST_LED_PATTERN_SET;
-            PRINT("%p %d\n\r", &p, p.m_pattern[1].m_interval[0].m_durationMs);
-            Q_ASSERT(0);
-            */
-            
+            me->ConfigPwm(1000);
+            me->StartPwm();
+           
             status = Q_HANDLED();
             break;
         }
@@ -254,15 +292,171 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);   
             
             //BSP_LED_Off(LED2);
-            if (HAL_TIM_PWM_Stop(&me->m_timHandle, TIM_CHANNEL_1) != HAL_OK) {
-                Q_ASSERT(0);
+            me->StopPwm();
+
+            status = Q_HANDLED();
+            break;
+        }
+        */
+        case USER_LED_PATTERN_REQ: {
+            LOG_EVENT(e);
+            UserLedPatternReq const &req = static_cast<UserLedPatternReq const &>(*e);
+            me->m_isRepeat = req.IsRepeat();            
+            me->m_intervalIndex = 0;
+            me->m_currPattern = &TEST_LED_PATTERN_SET.GetPattern(req.GetPatternIndex());
+            Evt *evt = new UserLedPatternCfm(req.GetSeq(), ERROR_SUCCESS);
+            QF::PUBLISH(evt, me); 
+            status = Q_TRAN(&UserLed::Active);
+            break;
+        }        
+        default: {
+            status = Q_SUPER(&UserLed::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UserLed::Idle(UserLed * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case USER_LED_OFF_REQ: {
+            LOG_EVENT(e);
+            Evt const &req = EVT_CAST(*e);
+            Evt *evt = new UserLedOffCfm(req.GetSeq(), ERROR_SUCCESS);
+            QF::PUBLISH(evt, me);   
+            status = Q_HANDLED();
+            break;
+        }        
+        default: {
+            status = Q_SUPER(&UserLed::Started);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UserLed::Active(UserLed * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            LedInterval const &currInterval = me->m_currPattern->GetInterval(me->m_intervalIndex);                        
+            me->m_intervalTimer.armX(currInterval.GetDurationMs());
+            me->ConfigPwm(currInterval.GetLevelPermil());
+            me->StartPwm();
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            me->StopPwm();
+            me->m_intervalTimer.disarm();
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_INIT_SIG: {
+            if (me->m_isRepeat) {
+                status = Q_TRAN(&UserLed::Repeating);
+            } else {
+                status = Q_TRAN(&UserLed::Once);
             }
-            
+            break;
+        }
+        case USER_LED_INTERVAL_TIMER: {
+            LOG_EVENT(e);
+            uint32_t intervalCount = me->m_currPattern->GetCount();
+            Q_ASSERT(intervalCount > 0);
+            if (me->m_intervalIndex < (intervalCount - 1)) {
+                Evt *evt = new Evt(USER_LED_NEXT_INTERVAL);
+                me->postLIFO(evt);
+            } else if (me->m_intervalIndex == (intervalCount - 1)) {
+                Evt *evt = new Evt(USER_LED_LAST_INTERVAL);
+                me->postLIFO(evt);
+            } else {
+                Q_ASSERT(0);
+            }                
+            status = Q_HANDLED();        
+            break;
+        }
+        case USER_LED_NEXT_INTERVAL: {
+            LOG_EVENT(e);
+            me->m_intervalIndex++;
+            status = Q_TRAN(&UserLed::Active);
+            break;
+        }
+        case USER_LED_LAST_INTERVAL: {
+            LOG_EVENT(e);
+            me->m_intervalIndex = 0;
+            status = Q_TRAN(&UserLed::Active);  
+            break;
+        }       
+        case USER_LED_DONE: {
+            LOG_EVENT(e);
+            status = Q_TRAN(&UserLed::Idle);  
+            break;
+        }   
+        default: {
+            status = Q_SUPER(&UserLed::Started);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UserLed::Repeating(UserLed * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
             status = Q_HANDLED();
             break;
         }
         default: {
-            status = Q_SUPER(&UserLed::Root);
+            status = Q_SUPER(&UserLed::Active);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UserLed::Once(UserLed * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case USER_LED_LAST_INTERVAL: {
+            LOG_EVENT(e);
+            Evt *evt = new Evt(USER_LED_DONE);
+            me->postLIFO(evt);
+            status = Q_HANDLED();
+            break;
+        }        
+        default: {
+            status = Q_SUPER(&UserLed::Active);
             break;
         }
     }

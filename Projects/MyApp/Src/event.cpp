@@ -100,10 +100,14 @@ char const * const eventName[] = {
     "USER_LED_STOP_CFM",
     "USER_LED_ON_REQ",
     "USER_LED_ON_CFM",
+    "USER_LED_PATTERN_REQ",
+    "USER_LED_PATTERN_CFM",
     "USER_LED_OFF_REQ",
     "USER_LED_OFF_CFM", 
-    "USER_LED_STATE_TIMER",
+    "USER_LED_INTERVAL_TIMER",
     "USER_LED_DONE",
+    "USER_LED_NEXT_INTERVAL",
+    "USER_LED_LAST_INTERVAL",
 };  
   
 char const * GetEvtName(QP::QSignal sig) {

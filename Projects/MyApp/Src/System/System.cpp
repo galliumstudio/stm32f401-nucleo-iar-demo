@@ -431,13 +431,16 @@ QState System::Started(System * const me, QEvt const * const e) {
             break;  
             }
         case USER_BTN_DOWN_IND: {
-            LOG_EVENT(e);
-            Evt *evt = new UserLedOnReq(me->m_nextSequence++);
+            LOG_EVENT(e);            
+            //Evt *evt = new UserLedOnReq(me->m_nextSequence++);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false);
+            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
         }
         case USER_LED_ON_CFM: 
+        case USER_LED_PATTERN_CFM: 
         case USER_LED_OFF_CFM: {
             LOG_EVENT(e);
             status = Q_HANDLED();
