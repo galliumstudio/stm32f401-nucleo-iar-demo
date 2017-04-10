@@ -106,6 +106,8 @@ enum {
     USER_LED_OFF_CFM,   
     USER_LED_INTERVAL_TIMER,
     USER_LED_DONE,
+    USER_LED_NEXT_INTERVAL,
+    USER_LED_LAST_INTERVAL,
 
     // Washing machine control simulator
     USER_SIM_START_REQ,
