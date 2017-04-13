@@ -378,6 +378,16 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
             }
             break;
         }
+        case USER_LED_OFF_REQ: {
+            LOG_EVENT(e);
+            Evt const &req = EVT_CAST(*e);
+            Evt *evt = new UserLedOffCfm(req.GetSeq(), ERROR_SUCCESS);
+            QF::PUBLISH(evt, me);   
+            evt = new Evt(USER_LED_DONE);
+            me->postLIFO(evt);
+            //status = Q_HANDLED();
+            break;
+        } 
         case USER_LED_INTERVAL_TIMER: {
             LOG_EVENT(e);
             uint32_t intervalCount = me->m_currPattern->GetCount();
