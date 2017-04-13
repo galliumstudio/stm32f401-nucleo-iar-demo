@@ -39,11 +39,12 @@
 #include "Test.h"
 #include "LedPattern.h"
 
+/*
 #undef LOG_EVENT
 #define LOG_EVENT(e)            
 #undef DEBUG
 #define DEBUG(format_, ...)
-
+*/
 
 Q_DEFINE_THIS_FILE
 
@@ -456,17 +457,21 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case USER_BTN_UP_IND: {
             LOG_EVENT(e);
-            Evt *evt = new UserLedOffReq(me->m_nextSequence++);
-            QF::PUBLISH(evt, me);
+            // TODO ASSIGNMENT
+            // Create USER_LED_OFF_REQ event via constructor and publish it.
+            // Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            // QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
             }
         case USER_BTN_DOWN_IND: {
             LOG_EVENT(e);            
-            //Evt *evt = new UserLedOnReq(me->m_nextSequence++);
-            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false);
-            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false);
-            QF::PUBLISH(evt, me);
+            // TODO ASSIGNMENT
+            // Create USER_LED_PATTERN_REQ event via constructor and publish it.
+            // Fill in pattern index (0-based) and whether it's repeating or not.
+            // See definition of the constructor in event.h.
+            // Evt *evt = new UserLedPatternReq(me->m_nextSequence++, ...);
+            // QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
         }
@@ -484,6 +489,7 @@ QState System::Started(System * const me, QEvt const * const e) {
             // Week 2 C++ test examples.
             //TestFunction();
             // LedPattern testing.
+            /*
             uint32_t patternIdx, intervalIdx;
             for (patternIdx = 0; patternIdx < TEST_LED_PATTERN_SET.GetCount(); patternIdx++) {
                 DEBUG("LED Pattern %d", patternIdx);
@@ -492,7 +498,8 @@ QState System::Started(System * const me, QEvt const * const e) {
                     LedInterval const &interval = pattern.GetInterval(intervalIdx);
                     DEBUG("    interval[%d] = {%d, %d}", intervalIdx, interval.GetLevelPermil(), interval.GetDurationMs());
                 }
-            }                       
+            } 
+            */
             status = Q_HANDLED();
             break;
         }

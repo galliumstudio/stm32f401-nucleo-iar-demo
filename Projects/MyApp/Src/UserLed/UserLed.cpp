@@ -34,10 +34,12 @@
 #include "event.h"
 #include "LedPattern.h"
 
+/*
 #undef LOG_EVENT
 #define LOG_EVENT(e)            
 #undef DEBUG
 #define DEBUG(x, y)
+*/
 
 Q_DEFINE_THIS_FILE
 
@@ -81,28 +83,6 @@ void UserLed::InitPwm() {
         TIM2CLK = APB1CLK*2
         APB1CLK = HCLK/2
         => TIM2CLK = HCLK = SystemCoreClock
-
-      To get TIM3 counter clock at 16 MHz, the prescaler is computed as follows:
-         Prescaler = (TIM2CLK / TIM3 counter clock) - 1
-         Prescaler = ((SystemCoreClock) /15 MHz) - 1
-
-      To get TIM3 output clock at 21 KHz, the period (ARR)) is computed as follows:
-         ARR = (TIM3 counter clock / TIM3 output clock) - 1
-             = 665
-
-      TIM3 Channel1 duty cycle = (TIM3_CCR1/ TIM3_ARR + 1)* 100 = 50%
-      TIM3 Channel2 duty cycle = (TIM3_CCR2/ TIM3_ARR + 1)* 100 = 37.5%
-      TIM3 Channel3 duty cycle = (TIM3_CCR3/ TIM3_ARR + 1)* 100 = 25%
-      TIM3 Channel4 duty cycle = (TIM3_CCR4/ TIM3_ARR + 1)* 100 = 12.5%
-
-      Note:
-       SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
-       Each time the core clock (HCLK) changes, user had to update SystemCoreClock
-       variable value. Otherwise, any configuration based on this variable will be incorrect.
-       This variable is updated in three ways:
-        1) by calling CMSIS function SystemCoreClockUpdate()
-        2) by calling HAL API function HAL_RCC_GetSysClockFreq()
-        3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
     ----------------------------------------------------------------------- */
 
     /* Initialize TIMx peripheral as follows:
@@ -132,7 +112,7 @@ void UserLed::InitPwm() {
 }        
     
 void UserLed::DeInitPwm() {
-    // TODO
+    // TODO (not required for Assignment 2)
 }
 
 void UserLed::ConfigPwm(uint32_t levelPermil) {  
@@ -276,42 +256,18 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             status = Q_TRAN(&UserLed::Stopped);
             break;
         }
-        /*
-        case USER_LED_ON_REQ: {
-            LOG_EVENT(e);
-            Evt const &req = EVT_CAST(*e);
-            Evt *evt = new UserLedOnCfm(req.GetSeq(), ERROR_SUCCESS);
-            QF::PUBLISH(evt, me);
-            
-            //BSP_LED_On(LED2);
-            me->ConfigPwm(1000);
-            me->StartPwm();
-           
-            status = Q_HANDLED();
-            break;
-        }
-        case USER_LED_OFF_REQ: {
-            LOG_EVENT(e);
-            Evt const &req = EVT_CAST(*e);
-            Evt *evt = new UserLedOffCfm(req.GetSeq(), ERROR_SUCCESS);
-            QF::PUBLISH(evt, me);   
-            
-            //BSP_LED_Off(LED2);
-            me->StopPwm();
-
-            status = Q_HANDLED();
-            break;
-        }
-        */
         case USER_LED_PATTERN_REQ: {
             LOG_EVENT(e);
             UserLedPatternReq const &req = static_cast<UserLedPatternReq const &>(*e);
             me->m_isRepeat = req.IsRepeat();            
             me->m_intervalIndex = 0;
-            me->m_currPattern = &TEST_LED_PATTERN_SET.GetPattern(req.GetPatternIndex());
+            // TODO ASSIGNMENT
+            //  me->m_currPattern = ...
             Evt *evt = new UserLedPatternCfm(req.GetSeq(), ERROR_SUCCESS);
             QF::PUBLISH(evt, me); 
-            status = Q_TRAN(&UserLed::Active);
+            // TODO ASSIGNMENT
+            // Transit to Active state.
+            // status = ...
             break;
         }        
         default: {
@@ -356,9 +312,16 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            LedInterval const &currInterval = me->m_currPattern->GetInterval(me->m_intervalIndex);                        
-            me->m_intervalTimer.armX(currInterval.GetDurationMs());
-            me->ConfigPwm(currInterval.GetLevelPermil());
+            // TODO ASSIGNMENT
+            //LedInterval const &currInterval =
+            
+            // TODO ASSIGNMENT
+            // Start timer (parameter is duration in milliseconds)
+            //me->m_intervalTimer.armX(...);
+            
+            // TODO ASSIGNMENT
+            // Configure PWM (paramter is level in 1/1000)
+            //me->ConfigPwm(...);
             me->StartPwm();
             status = Q_HANDLED();
             break;
@@ -385,7 +348,7 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);   
             evt = new Evt(USER_LED_DONE);
             me->postLIFO(evt);
-            //status = Q_HANDLED();
+            status = Q_HANDLED();
             break;
         } 
         case USER_LED_INTERVAL_TIMER: {
@@ -396,8 +359,8 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
                 Evt *evt = new Evt(USER_LED_NEXT_INTERVAL);
                 me->postLIFO(evt);
             } else if (me->m_intervalIndex == (intervalCount - 1)) {
-                Evt *evt = new Evt(USER_LED_LAST_INTERVAL);
-                me->postLIFO(evt);
+                // TODO ASSIGNMENT
+                // Follow example above, post USER_LED_LAST_INTERVAL to front of event queue.
             } else {
                 Q_ASSERT(0);
             }                
@@ -412,13 +375,17 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
         }
         case USER_LED_LAST_INTERVAL: {
             LOG_EVENT(e);
-            me->m_intervalIndex = 0;
-            status = Q_TRAN(&UserLed::Active);  
+            // TODO ASSIGNMENT
+            // Reset interval index and transit to itself.
+            // ...
+            // status = ...  
             break;
         }       
         case USER_LED_DONE: {
             LOG_EVENT(e);
-            status = Q_TRAN(&UserLed::Idle);  
+            // TODO ASSIGNMENT
+            // Transit to Idle state.
+            // status = ...
             break;
         }   
         default: {
@@ -465,8 +432,10 @@ QState UserLed::Once(UserLed * const me, QEvt const * const e) {
         }
         case USER_LED_LAST_INTERVAL: {
             LOG_EVENT(e);
-            Evt *evt = new Evt(USER_LED_DONE);
-            me->postLIFO(evt);
+            // TODO ASSIGNMENT
+            // Create USER_LED_DONE event and post to the front of event queue
+            // via postLIFO. See previous examples.
+            // ...
             status = Q_HANDLED();
             break;
         }        
