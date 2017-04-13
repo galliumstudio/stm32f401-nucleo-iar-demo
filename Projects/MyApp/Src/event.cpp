@@ -109,6 +109,9 @@ char const * const eventName[] = {
     "USER_LED_DONE",
     "USER_LED_NEXT_INTERVAL",
     "USER_LED_LAST_INTERVAL",
+    "USER_LED_LOAD_PATTERN",
+    "USER_LED_PATTERN_END",
+    "USER_LED_NEW_PATTERN",
 
     // Washing machine control simulator
     "USER_SIM_START_REQ",

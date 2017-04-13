@@ -432,6 +432,9 @@ QState System::Started(System * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
             //me->m_testTimer.armX(2000, 2000);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, true, 0);
+            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false, 0);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
         }
@@ -456,7 +459,9 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case USER_BTN_UP_IND: {
             LOG_EVENT(e);
-            Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            //Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            //QF::PUBLISH(evt, me);
+            Evt *evt = new UserLedOffReq(me->m_nextSequence++, 1);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
@@ -464,9 +469,11 @@ QState System::Started(System * const me, QEvt const * const e) {
         case USER_BTN_DOWN_IND: {
             LOG_EVENT(e);            
             //Evt *evt = new UserLedOnReq(me->m_nextSequence++);
-            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false);
-            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false);
+            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false, 1);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, true, 1);
             QF::PUBLISH(evt, me);
+            //evt = new UserLedOffReq(me->m_nextSequence++, 0);
+            //QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
         }

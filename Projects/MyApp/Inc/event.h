@@ -108,6 +108,9 @@ enum {
     USER_LED_DONE,
     USER_LED_NEXT_INTERVAL,
     USER_LED_LAST_INTERVAL,
+    USER_LED_LOAD_PATTERN,
+    USER_LED_PATTERN_END,
+    USER_LED_NEW_PATTERN,
 
     // Washing machine control simulator
     USER_SIM_START_REQ,
@@ -394,14 +397,17 @@ public:
     enum {
         TIMEOUT_MS = 100
     };
-    UserLedPatternReq(uint16_t seq, uint32_t patternIndex, bool isRepeat = false) :
-        Evt(USER_LED_PATTERN_REQ, seq), m_patternIndex(patternIndex), m_isRepeat(isRepeat) {}
+    UserLedPatternReq(uint16_t seq, uint32_t patternIndex, bool isRepeat = false, uint32_t layer = 0) :
+        Evt(USER_LED_PATTERN_REQ, seq), m_patternIndex(patternIndex),
+        m_isRepeat(isRepeat), m_layer(layer) {}
         
     uint32_t GetPatternIndex() const { return m_patternIndex; }
     bool IsRepeat() const { return m_isRepeat; }
+    uint32_t GetLayer() const { return m_layer; }
 private:
     uint32_t m_patternIndex;
     bool m_isRepeat;
+    uint32_t m_layer;
 };
 
 class UserLedPatternCfm : public ErrorEvt {
@@ -415,8 +421,11 @@ public:
     enum {
         TIMEOUT_MS = 100
     };
-    UserLedOffReq(uint16_t seq) :
-        Evt(USER_LED_OFF_REQ, seq) {}
+    UserLedOffReq(uint16_t seq, uint32_t layer) :
+        Evt(USER_LED_OFF_REQ, seq),  m_layer(layer) {}
+    uint32_t GetLayer() const { return m_layer; }        
+private:
+    uint32_t m_layer;        
 };
 
 class UserLedOffCfm : public ErrorEvt {
@@ -432,6 +441,15 @@ public:
     };
     UserSimStartReq(uint16_t seq) :
         Evt(USER_SIM_START_REQ, seq) {}
+};
+    
+class UserLedNewPattern: public Evt {
+public:
+    UserLedNewPattern(uint32_t layer) :
+        Evt(USER_LED_NEW_PATTERN, 0), m_layer(layer) {}
+    uint32_t GetLayer() const { return m_layer; }
+private:
+    uint32_t m_layer;
 };
 
 class UserSimStartCfm : public ErrorEvt {

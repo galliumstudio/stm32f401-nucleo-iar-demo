@@ -34,10 +34,12 @@
 #include "event.h"
 #include "LedPattern.h"
 
+/*
 #undef LOG_EVENT
 #define LOG_EVENT(e)            
 #undef DEBUG
 #define DEBUG(x, y)
+*/
 
 Q_DEFINE_THIS_FILE
 
@@ -157,7 +159,7 @@ void UserLed::StopPwm() {
 UserLed::UserLed() :
     QActive((QStateHandler)&UserLed::InitialPseudoState),
     m_id(USER_LED), m_name("USER_LED"), m_nextSequence(0), 
-    m_currPattern(NULL), m_intervalIndex(0), m_isRepeat(false),
+    m_currPattern(NULL), m_intervalIndex(0), m_currLayer(0),
     m_intervalTimer(this, USER_LED_INTERVAL_TIMER) {}
 
 QState UserLed::InitialPseudoState(UserLed * const me, QEvt const * const e) {
@@ -172,6 +174,9 @@ QState UserLed::InitialPseudoState(UserLed * const me, QEvt const * const e) {
     me->subscribe(USER_LED_DONE);
     me->subscribe(USER_LED_NEXT_INTERVAL);
     me->subscribe(USER_LED_LAST_INTERVAL);
+    me->subscribe(USER_LED_LOAD_PATTERN);
+    me->subscribe(USER_LED_PATTERN_END);
+    me->subscribe(USER_LED_NEW_PATTERN);
     
     return Q_TRAN(&UserLed::Root);
 }
@@ -253,7 +258,9 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             LOG_EVENT(e);       
             BSP_LED_Init(LED2);
             me->InitPwm();
-            me->ConfigPwm(DEFAULT_LEVEL_PERMIL);          
+            me->ConfigPwm(DEFAULT_LEVEL_PERMIL);
+            me->m_currLayer = 0;
+            me->InvalidateAllPatternInfo();
             status = Q_HANDLED();
             break;
         }
@@ -302,18 +309,27 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-        */
+        */      
         case USER_LED_PATTERN_REQ: {
             LOG_EVENT(e);
             UserLedPatternReq const &req = static_cast<UserLedPatternReq const &>(*e);
-            me->m_isRepeat = req.IsRepeat();            
-            me->m_intervalIndex = 0;
-            me->m_currPattern = &TEST_LED_PATTERN_SET.GetPattern(req.GetPatternIndex());
+            Q_ASSERT(req.GetLayer() < MAX_LAYER);
+            me->SavePatternInfo(req.GetLayer(), req.GetPatternIndex(), req.IsRepeat());
             Evt *evt = new UserLedPatternCfm(req.GetSeq(), ERROR_SUCCESS);
             QF::PUBLISH(evt, me); 
+            evt = new UserLedNewPattern(req.GetLayer());
+            me->postLIFO(evt);
+            status = Q_HANDLED();
+            break;
+        }      
+        case USER_LED_LOAD_PATTERN: {
+            LOG_EVENT(e);
+            uint32_t index = me->GetCurrPatternInfo().GetIndex();
+            me->m_currPattern = &TEST_LED_PATTERN_SET.GetPattern(index);
+            me->m_intervalIndex = 0;
             status = Q_TRAN(&UserLed::Active);
             break;
-        }        
+        }
         default: {
             status = Q_SUPER(&UserLed::Root);
             break;
@@ -342,7 +358,17 @@ QState UserLed::Idle(UserLed * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);   
             status = Q_HANDLED();
             break;
-        }        
+        }   
+        case USER_LED_NEW_PATTERN: {
+            LOG_EVENT(e);
+            UserLedNewPattern const &newPattern = static_cast<UserLedNewPattern const &>(*e);
+            Q_ASSERT(newPattern.GetLayer() < MAX_LAYER);
+            me->m_currLayer = newPattern.GetLayer();
+            Evt *evt = new Evt(USER_LED_LOAD_PATTERN);
+            me->postLIFO(evt);
+            status = Q_HANDLED();
+            break;
+        }  
         default: {
             status = Q_SUPER(&UserLed::Started);
             break;
@@ -371,7 +397,7 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
             break;
         }
         case Q_INIT_SIG: {
-            if (me->m_isRepeat) {
+            if (me->GetCurrPatternInfo().IsRepeat()) {
                 status = Q_TRAN(&UserLed::Repeating);
             } else {
                 status = Q_TRAN(&UserLed::Once);
@@ -394,6 +420,37 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
             status = Q_HANDLED();        
             break;
         }
+        case USER_LED_OFF_REQ: {
+            LOG_EVENT(e);
+            UserLedOffReq const &req = static_cast<UserLedOffReq const &>(*e);
+            Q_ASSERT(req.GetLayer() < MAX_LAYER);
+            me->InvalidatePatternInfo(req.GetLayer());
+            Evt *evt = new UserLedOffCfm(req.GetSeq(), ERROR_SUCCESS);
+            QF::PUBLISH(evt, me); 
+            if (req.GetLayer() == me->m_currLayer) {
+                Evt *evt = new Evt(USER_LED_PATTERN_END);
+                me->postLIFO(evt);
+            }
+            status = Q_HANDLED();
+            break;
+        }        
+        case USER_LED_PATTERN_END: {
+            LOG_EVENT(e);
+            uint32_t highestValidLayer = MAX_LAYER;     // invalid
+            bool found = me->GetHighestLayerInUse(highestValidLayer);
+            if (!found) {
+                me->m_currLayer = 0;
+                Evt *evt = new Evt(USER_LED_DONE);
+                me->postLIFO(evt);                
+            } else {
+                Q_ASSERT(highestValidLayer < MAX_LAYER);
+                me->m_currLayer = highestValidLayer;
+                Evt *evt = new Evt(USER_LED_LOAD_PATTERN);
+                me->postLIFO(evt);
+            }
+            status = Q_HANDLED();
+            break;
+        }        
         case USER_LED_NEXT_INTERVAL: {
             LOG_EVENT(e);
             me->m_intervalIndex++;
@@ -432,6 +489,18 @@ QState UserLed::Repeating(UserLed * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+        case USER_LED_NEW_PATTERN: {
+            LOG_EVENT(e);
+            UserLedNewPattern const &newPattern = static_cast<UserLedNewPattern const &>(*e);
+            Q_ASSERT(newPattern.GetLayer() < MAX_LAYER);
+            if (newPattern.GetLayer() >= me->m_currLayer) {
+                me->m_currLayer = newPattern.GetLayer();
+                Evt *evt = new Evt(USER_LED_LOAD_PATTERN);
+                me->postLIFO(evt);
+            }
+            status = Q_HANDLED();
+            break;
+        }          
         default: {
             status = Q_SUPER(&UserLed::Active);
             break;
@@ -455,11 +524,29 @@ QState UserLed::Once(UserLed * const me, QEvt const * const e) {
         }
         case USER_LED_LAST_INTERVAL: {
             LOG_EVENT(e);
-            Evt *evt = new Evt(USER_LED_DONE);
+            me->InvalidatePatternInfo(me->m_currLayer);
+            Evt *evt = new Evt(USER_LED_PATTERN_END);
             me->postLIFO(evt);
             status = Q_HANDLED();
             break;
+        }
+        case USER_LED_NEW_PATTERN: {
+            LOG_EVENT(e);
+            UserLedNewPattern const &newPattern = static_cast<UserLedNewPattern const &>(*e);
+            Q_ASSERT(newPattern.GetLayer() < MAX_LAYER);
+            // Condition below must be >, NOT >= since new pattern has been saved in patternInfo[].
+            if (newPattern.GetLayer() > me->m_currLayer) {
+                me->m_patternInfo[me->m_currLayer].Invalidate();
+            }
+            if (newPattern.GetLayer() >= me->m_currLayer) {
+                me->m_currLayer = newPattern.GetLayer();
+                Evt *evt = new Evt(USER_LED_LOAD_PATTERN);
+                me->postLIFO(evt);
+            }
+            status = Q_HANDLED();
+            break;
         }        
+
         default: {
             status = Q_SUPER(&UserLed::Active);
             break;

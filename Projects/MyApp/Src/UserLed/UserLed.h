@@ -36,6 +36,8 @@
 #include "bsp.h"
 #include "LedPattern.h"
 
+#define USER_LED_ASSERT(t_) ((t_)? (void)0: Q_onAssert("UserLed.h", (int32_t)__LINE__))
+
 using namespace QP;
 using namespace FW;
 
@@ -57,13 +59,64 @@ protected:
             static QState Active(UserLed * const me, QEvt const * const e);
                 static QState Repeating(UserLed * const me, QEvt const * const e);
                 static QState Once(UserLed * const me, QEvt const * const e);
-        
+    
+    class PatternInfo {
+    public:
+        enum {
+            INVALID_INDEX = 0xFFFFFFFF
+        };
+        // Default constructor
+        PatternInfo() : m_index(INVALID_INDEX), m_isRepeat(false) {}
+        void Invalidate() { m_index = INVALID_INDEX; }
+        bool IsValid() const { return m_index != INVALID_INDEX; }
+        void Save(uint32_t index, bool isRepeat) {
+            USER_LED_ASSERT(index != INVALID_INDEX);
+            m_index = index;
+            m_isRepeat = isRepeat;
+        }        
+        uint32_t GetIndex() const { return m_index; }
+        bool IsRepeat() const { return m_isRepeat; }
+    private:
+        uint32_t m_index;         // pattern index
+        bool m_isRepeat;
+    };
+ 
     void InitPwm();
     void DeInitPwm();
     void ConfigPwm(uint32_t levelPermil);
     void StartPwm();
     void StopPwm();
-        
+    void InvalidateAllPatternInfo() {
+        for (uint32_t i = 0; i < MAX_LAYER; i++) {
+            m_patternInfo[i].Invalidate();
+        }
+    }
+    void InvalidatePatternInfo(uint32_t layer) {
+        USER_LED_ASSERT(layer < MAX_LAYER);
+        m_patternInfo[layer].Invalidate();
+    }
+    void SavePatternInfo(uint32_t layer, uint32_t index, bool isRepeat) {
+        USER_LED_ASSERT(layer < MAX_LAYER);
+        m_patternInfo[layer].Save(index, isRepeat);
+    }
+    // Returns true if one is found; false if none in use.
+    bool GetHighestLayerInUse(uint32_t &layer) {
+        bool found = false;
+        // i must be signed.
+        for (int32_t i = MAX_LAYER - 1; i >= 0; i--) {
+            if (m_patternInfo[i].IsValid()) {
+                found = true;
+                layer = i;
+                break;
+            }
+        }        
+        return found;
+    }
+    PatternInfo &GetCurrPatternInfo() {
+        USER_LED_ASSERT(m_currLayer < MAX_LAYER);
+        return m_patternInfo[m_currLayer];
+    }
+            
     enum {
         EVT_QUEUE_COUNT = 16
     };
@@ -75,7 +128,12 @@ protected:
     TIM_OC_InitTypeDef m_timConfig;
     LedPattern const *m_currPattern;
     uint32_t m_intervalIndex;
-    bool m_isRepeat;
+    
+    enum {
+        MAX_LAYER = 3  
+    };
+    PatternInfo m_patternInfo[MAX_LAYER];
+    uint32_t m_currLayer;
     
     QTimeEvt m_intervalTimer;
 };
