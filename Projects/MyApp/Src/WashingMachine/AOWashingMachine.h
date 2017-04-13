@@ -65,6 +65,7 @@ protected:
                     static QState Rinsing(AOWashingMachine * const me, QEvt const * const e);
                     static QState DrainingRinse(AOWashingMachine * const me, QEvt const * const e);
                     static QState Spinning(AOWashingMachine * const me, QEvt const * const e);
+                    static QState Delay(AOWashingMachine * const me, QEvt const * const e);
 
     // Helper functions
     uint8_t CheckDoorSensor();
@@ -110,7 +111,7 @@ protected:
         uint16_t washTemperature;
         uint16_t rinseTemperature;
         WashType washType;
-    } cycleParameters_t ;
+    } cycleParameters_t;
 
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
     QEvt const *m_deferQueueStor[DEFER_QUEUE_COUNT];

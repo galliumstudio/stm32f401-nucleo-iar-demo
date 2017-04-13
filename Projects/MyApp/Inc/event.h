@@ -126,6 +126,7 @@ enum {
     iWASH_CLOSE,
     iWASH_OPEN,
     iWASH_DONE,
+    iWASH_DELAY,
     WASH_TIMEOUT,
     RINSE_TIMEOUT,
     SPIN_TIMEOUT,
