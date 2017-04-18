@@ -142,6 +142,17 @@ enum {
     WASH_FILLED_IND,
     WASH_DRAINED_IND,
 
+    // Demo
+    DEMO_A,
+    DEMO_B,
+    DEMO_C,
+    DEMO_D,    
+    DEMO_E,
+    DEMO_F,
+    DEMO_G,
+    DEMO_H,
+    DEMO_I,
+    
     MAX_PUB_SIG
 };
 

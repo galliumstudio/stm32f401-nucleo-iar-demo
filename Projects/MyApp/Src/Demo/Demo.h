@@ -27,38 +27,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
+#ifndef DEMO_H_
+#define DEMO_H_
+
+#include "qpcpp.h"
+#include "fw_evt.h"
+#include "hsm_id.h"
+#include "bsp.h"
+
+#define DEMO_ASSERT(t_) ((t_)? (void)0: Q_onAssert("Demo.h", (int32_t)__LINE__))
+
+using namespace QP;
+using namespace FW;
 
 namespace APP {
 
-enum {
-    SYSTEM = 1,
-    UART2_ACT,
-    UART2_IN,
-    UART2_OUT,
-    USER_BTN,
-    USER_LED,
-    USER_SIM,
-    WASH,
-    DEMO,
-    HSM_COUNT
-};
+class Demo : public QActive {
+public:
+    Demo();
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-    PRIO_UART2_ACT  = 30,
-    PRIO_CONSOLE    = 28,
-    PRIO_SYSTEM     = 26,
-    PRIO_USER_BTN   = 24,
-    PRIO_USER_LED   = 22,
-    PRIO_USER_SIM   = 18,
-    PRIO_WASH       = 12,
-    PRIO_DEMO       = 11,
+protected:
+    static QState InitialPseudoState(Demo * const me, QEvt const * const e);
+    static QState Root(Demo * const me, QEvt const * const e);
+        static QState S(Demo * const me, QEvt const * const e);
+            static QState S1(Demo * const me, QEvt const * const e);
+                static QState S11(Demo * const me, QEvt const * const e);
+            static QState S2(Demo * const me, QEvt const * const e);
+                static QState S21(Demo * const me, QEvt const * const e);
+                    static QState S211(Demo * const me, QEvt const * const e);
+                
+    enum {
+        EVT_QUEUE_COUNT = 8
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+    char const * m_name;
+    uint32_t m_foo;
 };
 
 } // namespace APP
 
-#endif // HSM_ID_H
+#endif // DEMO_H_

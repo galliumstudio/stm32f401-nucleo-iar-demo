@@ -1673,6 +1673,15 @@
     <group>
       <name>Src</name>
       <group>
+        <name>Demo</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.h</name>
+        </file>
+      </group>
+      <group>
         <name>System</name>
         <file>
           <name>$PROJ_DIR$\..\Src\System\System.cpp</name>

@@ -196,12 +196,12 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>1100</x>
-      <y>610</y>
+      <y>640</y>
       <w>380</w>
-      <h>100</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>360.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
+    <additional_attributes>360.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -292,7 +292,7 @@ valign=top
       <x>150</x>
       <y>470</y>
       <w>380</w>
-      <h>150</h>
+      <h>170</h>
     </coordinates>
     <panel_attributes>Starting2
 --
@@ -317,12 +317,12 @@ valign=top
     <id>Relation</id>
     <coordinates>
       <x>320</x>
-      <y>610</y>
+      <y>630</y>
       <w>30</w>
-      <h>160</h>
+      <h>140</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
@@ -354,7 +354,7 @@ style=wordwrap</panel_attributes>
       <x>920</x>
       <y>470</y>
       <w>380</w>
-      <h>150</h>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Stopping2
 --

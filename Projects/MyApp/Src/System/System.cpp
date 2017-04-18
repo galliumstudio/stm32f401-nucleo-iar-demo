@@ -491,6 +491,7 @@ QState System::Started(System * const me, QEvt const * const e) {
             // Week 2 C++ test examples.
             //TestFunction();
             // LedPattern testing.
+            /*
             uint32_t patternIdx, intervalIdx;
             for (patternIdx = 0; patternIdx < TEST_LED_PATTERN_SET.GetCount(); patternIdx++) {
                 DEBUG("LED Pattern %d", patternIdx);
@@ -499,7 +500,8 @@ QState System::Started(System * const me, QEvt const * const e) {
                     LedInterval const &interval = pattern.GetInterval(intervalIdx);
                     DEBUG("    interval[%d] = {%d, %d}", intervalIdx, interval.GetLevelPermil(), interval.GetDurationMs());
                 }
-            }                       
+            } 
+            */
             status = Q_HANDLED();
             break;
         }

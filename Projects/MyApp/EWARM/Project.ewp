@@ -330,6 +330,7 @@
           <state>$PROJ_DIR$\..\Src\UserBtn</state>
           <state>$PROJ_DIR$\..\Src\UserLed</state>
           <state>$PROJ_DIR$\..\Src\WashingMachine</state>
+          <state>$PROJ_DIR$\..\Src\Demo</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1502,6 +1503,15 @@
     </group>
     <group>
       <name>Src</name>
+      <group>
+        <name>Demo</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.h</name>
+        </file>
+      </group>
       <group>
         <name>System</name>
         <file>
