@@ -264,7 +264,7 @@ QState System::Starting2(System * const me, QEvt const * const e) {
         case USER_SIM_START_CFM:
         case WASH_START_CFM: {
             LOG_EVENT(e);
-            me->HandleCfm(ERROR_EVT_CAST(*e), 2);
+            me->HandleCfm(ERROR_EVT_CAST(*e), 4);
             status = Q_HANDLED();
             break;
         }
