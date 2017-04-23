@@ -39,6 +39,8 @@
 #include "Test.h"
 #include "LedPattern.h"
 
+#define DISABLE_WASHING_MACHINE
+
 #undef LOG_EVENT
 #define LOG_EVENT(e)            
 #undef DEBUG
@@ -241,6 +243,7 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
 
+#ifndef DISABLE_WASHING_MACHINE            
             evt = new UserSimStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
@@ -248,6 +251,7 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             evt = new WashStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
+#endif            
 
             status = Q_HANDLED();
             break;
@@ -263,7 +267,11 @@ QState System::Starting2(System * const me, QEvt const * const e) {
         case USER_SIM_START_CFM:
         case WASH_START_CFM: {
             LOG_EVENT(e);
+#ifndef DISABLE_WASHING_MACHINE            
+            me->HandleCfm(ERROR_EVT_CAST(*e), 4);
+#else
             me->HandleCfm(ERROR_EVT_CAST(*e), 2);
+#endif            
             status = Q_HANDLED();
             break;
         }
@@ -374,10 +382,12 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
             evt = new UserBtnStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
+#ifndef DISABLE_WASHING_MACHINE
             evt = new UserSimStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             evt = new WashStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
+#endif
             status = Q_HANDLED();
             break;
         }
@@ -401,7 +411,11 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
         case USER_SIM_STOP_CFM:
         case WASH_STOP_CFM: {
             LOG_EVENT(e);
+#ifndef DISABLE_WASHING_MACHINE            
+            me->HandleCfm(ERROR_EVT_CAST(*e), 4);
+#else
             me->HandleCfm(ERROR_EVT_CAST(*e), 2);
+#endif
             status = Q_HANDLED();
             break;
         }
