@@ -152,6 +152,18 @@ char const * const eventName[] = {
     "DEMO_G",
     "DEMO_H",
     "DEMO_I",
+    
+    // Traffic
+    "TRAFFIC_START_REQ",
+    "TRAFFIC_START_CFM",
+    "TRAFFIC_STOP_REQ",
+    "TRAFFIC_STOP_CFM",
+    "TRAFFIC_CAR_NS_REQ",
+    "TRAFFIC_CAR_EW_REQ",
+    "TRAFFIC_WAIT_TO",   
+    "LAMP_RED_REQ",      
+    "LAMP_YELLOW_REQ",   
+    "LAMP_GREEN_REQ", 
 };
 
 char const * GetEvtName(QP::QSignal sig) {

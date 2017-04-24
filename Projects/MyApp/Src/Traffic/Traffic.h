@@ -27,42 +27,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
+#ifndef TRAFFIC_H_
+#define TRAFFIC_H_
+
+#include "qpcpp.h"
+#include "fw_evt.h"
+#include "hsm_id.h"
+#include "bsp.h"
+#include "Lamp.h"
+
+#define TRAFFIC_ASSERT(t_) ((t_)? (void)0: Q_onAssert("Traffic.h", (int32_t)__LINE__))
+
+using namespace QP;
+using namespace FW;
 
 namespace APP {
 
-enum {
-    SYSTEM = 1,
-    UART2_ACT,
-    UART2_IN,
-    UART2_OUT,
-    USER_BTN,
-    USER_LED,
-    USER_SIM,
-    WASH,
-    DEMO,
-    TRAFFIC,
-        LAMP_NS,        // Orthogonal regions in Traffic active object
-        LAMP_EW,        // Orthogonal regions in Traffic active object
-    HSM_COUNT
-};
+class Traffic : public QActive {
+public:
+    Traffic();
+    void Start(uint8_t prio) {
+        QActive::start(prio, m_evtQueueStor, ARRAY_COUNT(m_evtQueueStor), NULL, 0);
+    }
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-    PRIO_UART2_ACT  = 30,
-    PRIO_CONSOLE    = 28,
-    PRIO_SYSTEM     = 26,
-    PRIO_USER_BTN   = 24,
-    PRIO_USER_LED   = 22,
-    PRIO_USER_SIM   = 18,
-    PRIO_WASH       = 12,
-    PRIO_DEMO       = 11,
-    PRIO_TRAFFIC    = 10,
+protected:
+    static QState InitialPseudoState(Traffic * const me, QEvt const * const e);
+    static QState Root(Traffic * const me, QEvt const * const e);
+        static QState Stopped(Traffic * const me, QEvt const * const e);
+        static QState Started(Traffic * const me, QEvt const * const e);
+         
+    void PrintUsage();
+    
+    enum {
+        EVT_QUEUE_COUNT = 8
+    };
+    QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
+    uint8_t m_id;
+    char const * m_name;
+    Lamp m_lampNS;
+    Lamp m_lampEW;
+
 };
 
 } // namespace APP
 
-#endif // HSM_ID_H
+#endif // TRAFFIC_H_

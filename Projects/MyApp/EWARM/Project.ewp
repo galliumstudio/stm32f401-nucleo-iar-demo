@@ -331,6 +331,8 @@
           <state>$PROJ_DIR$\..\Src\UserLed</state>
           <state>$PROJ_DIR$\..\Src\WashingMachine</state>
           <state>$PROJ_DIR$\..\Src\Demo</state>
+          <state>$PROJ_DIR$\..\Src\Traffic</state>
+          <state>$PROJ_DIR$\..\Src\Traffic\Lamp</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1528,6 +1530,24 @@
         </file>
       </group>
       <group>
+        <name>Traffic</name>
+        <group>
+          <name>Lamp</name>
+          <file>
+            <name>$PROJ_DIR$\..\Src\Traffic\Lamp\Lamp.cpp</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Src\Traffic\Lamp\Lamp.h</name>
+          </file>
+        </group>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Traffic\Trafffic.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Traffic\Traffic.h</name>
+        </file>
+      </group>
+      <group>
         <name>UartAct</name>
         <group>
           <name>UartIn</name>
@@ -1582,21 +1602,6 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\Src\UserLed\UserLed.h</name>
-        </file>
-      </group>
-      <group>
-        <name>WashingMachine</name>
-        <file>
-          <name>$PROJ_DIR$\..\Src\WashingMachine\AOUserCtrlSimulator.cpp</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\Src\WashingMachine\AOUserCtrlSimulator.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\Src\WashingMachine\AOWashingMachine.cpp</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\Src\WashingMachine\AOWashingMachine.h</name>
         </file>
       </group>
       <file>

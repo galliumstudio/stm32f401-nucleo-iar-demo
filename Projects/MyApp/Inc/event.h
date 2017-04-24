@@ -153,6 +153,18 @@ enum {
     DEMO_H,
     DEMO_I,
     
+    // Traffic
+    TRAFFIC_START_REQ,
+    TRAFFIC_START_CFM,
+    TRAFFIC_STOP_REQ,
+    TRAFFIC_STOP_CFM,
+    TRAFFIC_CAR_NS_REQ,         // of type Evt (no CFM)
+    TRAFFIC_CAR_EW_REQ,         // of type Evt (no CFM)
+    TRAFFIC_WAIT_TO,            // of type QTimeEvt
+    LAMP_RED_REQ,               // of type LampRedReq (no CFM)
+    LAMP_YELLOW_REQ,            // of type LampYellowReq (no CFM)
+    LAMP_GREEN_REQ,             // of type LampGreenReq (no CFM)
+    
     MAX_PUB_SIG
 };
 
@@ -548,7 +560,62 @@ public:
         ErrorEvt(WASH_STOP_CFM, seq, error, reason) {}
 };
 
+class TrafficStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    TrafficStartReq(uint16_t seq) :
+        Evt(TRAFFIC_START_REQ, seq) {}
+};
 
+class TrafficStartCfm : public ErrorEvt {
+public:
+    TrafficStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(TRAFFIC_START_CFM, seq, error, reason) {}
+};
+
+class TrafficStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    TrafficStopReq(uint16_t seq) :
+        Evt(TRAFFIC_STOP_REQ, seq) {}
+};
+
+class TrafficStopCfm : public ErrorEvt {
+public:
+    TrafficStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(TRAFFIC_STOP_CFM, seq, error, reason) {}
+};
+
+class LampReq : public Evt {
+public:
+    LampReq(QP::QSignal sig, uint8_t lampId) :
+        Evt(sig, 0), m_lampId(lampId) {}
+        uint8_t GetLampId() const { return m_lampId; }
+private:
+    uint8_t m_lampId;   // either LAMP_NS or LAMP_EW
+};
+
+class LampRedReq : public LampReq {
+public:
+    LampRedReq(uint8_t lampId) :
+        LampReq(LAMP_RED_REQ, lampId) {}
+};
+
+class LampYellowReq : public LampReq {
+public:
+    LampYellowReq(uint8_t lampId) :
+        LampReq(LAMP_YELLOW_REQ, lampId) {}
+};
+
+class LampGreenReq : public LampReq {
+public:
+    LampGreenReq(uint8_t lampId) :
+        LampReq(LAMP_GREEN_REQ, lampId) {}
+};
 
 }
 

@@ -39,13 +39,12 @@
 #include "Test.h"
 #include "LedPattern.h"
 
-#define DISABLE_WASHING_MACHINE
-
+/*
 #undef LOG_EVENT
 #define LOG_EVENT(e)            
 #undef DEBUG
 #define DEBUG(format_, ...)
-
+*/
 
 Q_DEFINE_THIS_FILE
 
@@ -82,10 +81,8 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(USER_LED_START_CFM);
     me->subscribe(USER_LED_ON_CFM);
     me->subscribe(USER_LED_OFF_CFM);
-    me->subscribe(USER_SIM_START_CFM);
-    me->subscribe(USER_SIM_STOP_CFM);
-    me->subscribe(WASH_START_CFM);
-    me->subscribe(WASH_STOP_CFM);
+    me->subscribe(TRAFFIC_START_CFM);
+    me->subscribe(TRAFFIC_STOP_CFM);
 
     return Q_TRAN(&System::Root);
 }
@@ -231,8 +228,7 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStartReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStartReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStartReq::TIMEOUT_MS);
-            Q_ASSERT(timeout > UserSimStartReq::TIMEOUT_MS);
-            Q_ASSERT(timeout > WashStartReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > TrafficStartReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
             
@@ -242,17 +238,9 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             evt = new UserBtnStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
-
-#ifndef DISABLE_WASHING_MACHINE            
-            evt = new UserSimStartReq(me->m_nextSequence++);
+            evt = new TrafficStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
-
-            evt = new WashStartReq(me->m_nextSequence++);
-            // TODO - Save sequence number for comparison.
-            QF::PUBLISH(evt, me);
-#endif            
-
             status = Q_HANDLED();
             break;
         }
@@ -264,14 +252,9 @@ QState System::Starting2(System * const me, QEvt const * const e) {
         }
         case USER_LED_START_CFM:
         case USER_BTN_START_CFM:
-        case USER_SIM_START_CFM:
-        case WASH_START_CFM: {
+        case TRAFFIC_START_CFM: {
             LOG_EVENT(e);
-#ifndef DISABLE_WASHING_MACHINE            
-            me->HandleCfm(ERROR_EVT_CAST(*e), 4);
-#else
-            me->HandleCfm(ERROR_EVT_CAST(*e), 2);
-#endif            
+            me->HandleCfm(ERROR_EVT_CAST(*e), 3);       
             status = Q_HANDLED();
             break;
         }
@@ -373,8 +356,7 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStopReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStopReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStopReq::TIMEOUT_MS);
-            Q_ASSERT(timeout > UserSimStopReq::TIMEOUT_MS);
-            Q_ASSERT(timeout > WashStopReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > TrafficStopReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
 
@@ -382,12 +364,8 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             QF::PUBLISH(evt, me);
             evt = new UserBtnStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
-#ifndef DISABLE_WASHING_MACHINE
-            evt = new UserSimStopReq(me->m_nextSequence++);
+            evt = new TrafficStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
-            evt = new WashStopReq(me->m_nextSequence++);
-            QF::PUBLISH(evt, me);
-#endif
             status = Q_HANDLED();
             break;
         }
@@ -408,14 +386,9 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
         }
         case USER_LED_STOP_CFM:
         case USER_BTN_STOP_CFM:
-        case USER_SIM_STOP_CFM:
-        case WASH_STOP_CFM: {
+        case TRAFFIC_STOP_CFM: {
             LOG_EVENT(e);
-#ifndef DISABLE_WASHING_MACHINE            
-            me->HandleCfm(ERROR_EVT_CAST(*e), 4);
-#else
-            me->HandleCfm(ERROR_EVT_CAST(*e), 2);
-#endif
+            me->HandleCfm(ERROR_EVT_CAST(*e), 3);
             status = Q_HANDLED();
             break;
         }
@@ -500,7 +473,7 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
-            DEBUG("Rx char %c", ind.GetChar());
+            //DEBUG("Rx char %c", ind.GetChar());
             
             // Week 2 C++ test examples.
             //TestFunction();
