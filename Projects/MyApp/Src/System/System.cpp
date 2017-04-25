@@ -459,8 +459,8 @@ QState System::Started(System * const me, QEvt const * const e) {
             LOG_EVENT(e);
             // TODO ASSIGNMENT
             // Create USER_LED_OFF_REQ event via constructor and publish it.
-            // Evt *evt = new UserLedOffReq(me->m_nextSequence++);
-            // QF::PUBLISH(evt, me);
+            Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
             }
@@ -470,8 +470,8 @@ QState System::Started(System * const me, QEvt const * const e) {
             // Create USER_LED_PATTERN_REQ event via constructor and publish it.
             // Fill in pattern index (0-based) and whether it's repeating or not.
             // See definition of the constructor in event.h.
-            // Evt *evt = new UserLedPatternReq(me->m_nextSequence++, ...);
-            // QF::PUBLISH(evt, me);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
         }
