@@ -434,6 +434,8 @@ QState AOWashingMachine::DoorUnlocked(AOWashingMachine * const me, QEvt const * 
         {
             LOG_EVENT(e);
             me->UnlockDoor();
+            Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
         }
@@ -488,6 +490,8 @@ QState AOWashingMachine::DoorLocked(AOWashingMachine * const me, QEvt const * co
         {
             LOG_EVENT(e);
             me->LockDoor();
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, true);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
         }
@@ -505,6 +509,8 @@ QState AOWashingMachine::DoorLocked(AOWashingMachine * const me, QEvt const * co
         }
         case iWASH_DONE:
         {
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false);
+            QF::PUBLISH(evt, me);
             status = Q_TRAN(&AOWashingMachine::DoorUnlocked);
             break;
         }

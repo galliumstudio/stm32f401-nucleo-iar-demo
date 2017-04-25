@@ -261,13 +261,17 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             UserLedPatternReq const &req = static_cast<UserLedPatternReq const &>(*e);
             me->m_isRepeat = req.IsRepeat();            
             me->m_intervalIndex = 0;
-            // TODO ASSIGNMENT
-            //  me->m_currPattern = ...
+                   
+            
+            LedPatternSet const &patternSet = TEST_LED_PATTERN_SET;
+            LedPattern const &pattern = patternSet.GetPattern(0);
+            me->m_currPattern = &pattern;
+    
+            
             Evt *evt = new UserLedPatternCfm(req.GetSeq(), ERROR_SUCCESS);
             QF::PUBLISH(evt, me); 
-            // TODO ASSIGNMENT
             // Transit to Active state.
-            // status = ...
+            status = Q_TRAN(&UserLed::Active);
             break;
         }        
         default: {
@@ -312,16 +316,13 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            // TODO ASSIGNMENT
-            //LedInterval const &currInterval =
+            LedInterval const &currInterval = me->m_currPattern->GetInterval(me->m_intervalIndex);
             
-            // TODO ASSIGNMENT
             // Start timer (parameter is duration in milliseconds)
-            //me->m_intervalTimer.armX(...);
+            me->m_intervalTimer.armX(currInterval.GetDurationMs());
             
-            // TODO ASSIGNMENT
             // Configure PWM (paramter is level in 1/1000)
-            //me->ConfigPwm(...);
+            me->ConfigPwm(currInterval.GetLevelPermil());
             me->StartPwm();
             status = Q_HANDLED();
             break;
@@ -359,8 +360,9 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
                 Evt *evt = new Evt(USER_LED_NEXT_INTERVAL);
                 me->postLIFO(evt);
             } else if (me->m_intervalIndex == (intervalCount - 1)) {
-                // TODO ASSIGNMENT
                 // Follow example above, post USER_LED_LAST_INTERVAL to front of event queue.
+                Evt *evt = new Evt(USER_LED_LAST_INTERVAL);
+                me->postLIFO(evt);
             } else {
                 Q_ASSERT(0);
             }                
@@ -375,17 +377,15 @@ QState UserLed::Active(UserLed * const me, QEvt const * const e) {
         }
         case USER_LED_LAST_INTERVAL: {
             LOG_EVENT(e);
-            // TODO ASSIGNMENT
             // Reset interval index and transit to itself.
-            // ...
-            // status = ...  
+            me->m_intervalIndex = 0;
+            status = Q_TRAN(&UserLed::Active);
             break;
         }       
         case USER_LED_DONE: {
             LOG_EVENT(e);
-            // TODO ASSIGNMENT
             // Transit to Idle state.
-            // status = ...
+            status = Q_TRAN(&UserLed::Idle);
             break;
         }   
         default: {
@@ -432,10 +432,11 @@ QState UserLed::Once(UserLed * const me, QEvt const * const e) {
         }
         case USER_LED_LAST_INTERVAL: {
             LOG_EVENT(e);
-            // TODO ASSIGNMENT
             // Create USER_LED_DONE event and post to the front of event queue
             // via postLIFO. See previous examples.
             // ...
+            Evt *evt = new Evt(USER_LED_DONE);
+            me->postLIFO(evt);
             status = Q_HANDLED();
             break;
         }        
