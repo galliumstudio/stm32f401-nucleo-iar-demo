@@ -55,6 +55,7 @@ protected:
     static QState Root(Traffic * const me, QEvt const * const e);
         static QState Stopped(Traffic * const me, QEvt const * const e);
         static QState Started(Traffic * const me, QEvt const * const e);
+        // Add new states here...
          
     void PrintUsage();
     
@@ -67,6 +68,7 @@ protected:
     Lamp m_lampNS;
     Lamp m_lampEW;
 
+    QTimeEvt m_waitTimer;       // Timer used to wait for minimum duration in NSGo or EWGo states.
 };
 
 } // namespace APP

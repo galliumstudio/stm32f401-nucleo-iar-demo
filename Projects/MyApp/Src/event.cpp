@@ -160,7 +160,7 @@ char const * const eventName[] = {
     "TRAFFIC_STOP_CFM",
     "TRAFFIC_CAR_NS_REQ",
     "TRAFFIC_CAR_EW_REQ",
-    "TRAFFIC_WAIT_TO",   
+    "TRAFFIC_WAIT_TIMER",   
     "LAMP_RED_REQ",      
     "LAMP_YELLOW_REQ",   
     "LAMP_GREEN_REQ", 

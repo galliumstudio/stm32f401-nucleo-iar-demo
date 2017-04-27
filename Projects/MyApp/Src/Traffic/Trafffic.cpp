@@ -53,7 +53,8 @@ void Traffic::PrintUsage() {
 Traffic::Traffic() :
     QActive((QStateHandler)&Traffic::InitialPseudoState),
     m_id(TRAFFIC), m_name("TRAFFIC"),
-    m_lampNS(LAMP_NS, "LAMP_NS", this), m_lampEW(LAMP_EW, "LAMP_EW", this) {}
+    m_lampNS(LAMP_NS, "LAMP_NS", this), m_lampEW(LAMP_EW, "LAMP_EW", this),
+    m_waitTimer(this, TRAFFIC_WAIT_TIMER){}
 
 QState Traffic::InitialPseudoState(Traffic * const me, QEvt const * const e) {
     (void)e;
@@ -62,7 +63,7 @@ QState Traffic::InitialPseudoState(Traffic * const me, QEvt const * const e) {
     me->subscribe(TRAFFIC_STOP_REQ);
     me->subscribe(TRAFFIC_CAR_NS_REQ);
     me->subscribe(TRAFFIC_CAR_EW_REQ);
-    me->subscribe(TRAFFIC_WAIT_TO);   
+    me->subscribe(TRAFFIC_WAIT_TIMER);   
     me->subscribe(LAMP_RED_REQ);      
     me->subscribe(LAMP_YELLOW_REQ);   
     me->subscribe(LAMP_GREEN_REQ);    
@@ -76,10 +77,15 @@ QState Traffic::Root(Traffic * const me, QEvt const * const e) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
             status = Q_HANDLED();
+            // Test only. Start 1000ms (1s) timer. Please remove.
+            //me->m_waitTimer.armX(1000);
+            status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
+            // Test only. Stop timer. Please remove.
+            //me->m_waitTimer.disarm();
             status = Q_HANDLED();
             break;
         }
@@ -96,6 +102,14 @@ QState Traffic::Root(Traffic * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }  
+        // Test only. Showing how to handle a timeout event. Please remove.
+        /*
+        case TRAFFIC_WAIT_TIMER: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        */
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
             char ch = ind.GetChar();

@@ -160,7 +160,7 @@ enum {
     TRAFFIC_STOP_CFM,
     TRAFFIC_CAR_NS_REQ,         // of type Evt (no CFM)
     TRAFFIC_CAR_EW_REQ,         // of type Evt (no CFM)
-    TRAFFIC_WAIT_TO,            // of type QTimeEvt
+    TRAFFIC_WAIT_TIMER,         // of type QTimeEvt
     LAMP_RED_REQ,               // of type LampRedReq (no CFM)
     LAMP_YELLOW_REQ,            // of type LampYellowReq (no CFM)
     LAMP_GREEN_REQ,             // of type LampGreenReq (no CFM)
