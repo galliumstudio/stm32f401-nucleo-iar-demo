@@ -55,7 +55,17 @@ protected:
     static QState Root(Traffic * const me, QEvt const * const e);
         static QState Stopped(Traffic * const me, QEvt const * const e);
         static QState Started(Traffic * const me, QEvt const * const e);
-        // Add new states here...
+           static QState NSGo(Traffic * const me, QEvt const * const e);
+               static QState NSMinTimeWait(Traffic * const me, QEvt const * const e);
+               static QState NSMinTimeExceeded(Traffic * const me, QEvt const * const e);
+           static QState NSSlow(Traffic * const me, QEvt const * const e);
+           static QState EWGo(Traffic * const me, QEvt const * const e);
+               static QState EWMinTimeWait(Traffic * const me, QEvt const * const e);
+               static QState EWMinTimeExceeded(Traffic * const me, QEvt const * const e);
+           static QState EWSlow(Traffic * const me, QEvt const * const e);
+           static QState StopSign(Traffic * const me, QEvt const * const e);
+               static QState StopSignOn(Traffic * const me, QEvt const * const e);
+               static QState StopSignOff(Traffic * const me, QEvt const * const e);           
          
     void PrintUsage();
     
@@ -65,10 +75,21 @@ protected:
     QEvt const *m_evtQueueStor[EVT_QUEUE_COUNT];
     uint8_t m_id;
     char const * m_name;
+    bool m_carWaiting;
     Lamp m_lampNS;
     Lamp m_lampEW;
 
+    enum {
+        NS_MIN_WAIT_TIMER_MS = 20000,
+        NS_SLOW_TIMER_MS     = 3000,
+        EW_MIN_WAIT_TIMER_MS = 10000,
+        EW_SLOW_TIMER_MS     = 3000,
+        EW_IDLE_TIMER_MS     = 15000,
+        BLINK_TIMER_MS       = 1000
+    };
     QTimeEvt m_waitTimer;       // Timer used to wait for minimum duration in NSGo or EWGo states.
+    QTimeEvt m_idleTimer;       // Timer used to detect idle condition in EW direction
+    QTimeEvt m_blinkTimer;      // Timer used to blink stop sign.
 };
 
 } // namespace APP

@@ -160,10 +160,14 @@ enum {
     TRAFFIC_STOP_CFM,
     TRAFFIC_CAR_NS_REQ,         // of type Evt (no CFM)
     TRAFFIC_CAR_EW_REQ,         // of type Evt (no CFM)
+    TRAFFIC_ERROR_REQ,          // of type Evt (no CFM)
     TRAFFIC_WAIT_TIMER,         // of type QTimeEvt
+    TRAFFIC_IDLE_TIMER,         // of type QTimeEvt
+    TRAFFIC_BLINK_TIMER,        // of type QTimeEvt
     LAMP_RED_REQ,               // of type LampRedReq (no CFM)
     LAMP_YELLOW_REQ,            // of type LampYellowReq (no CFM)
     LAMP_GREEN_REQ,             // of type LampGreenReq (no CFM)
+    LAMP_OFF_REQ,               // of type LampGreenReq (no CFM)
     
     MAX_PUB_SIG
 };
@@ -615,6 +619,12 @@ class LampGreenReq : public LampReq {
 public:
     LampGreenReq(uint8_t lampId) :
         LampReq(LAMP_GREEN_REQ, lampId) {}
+};
+
+class LampOffReq : public LampReq {
+public:
+    LampOffReq(uint8_t lampId) :
+        LampReq(LAMP_OFF_REQ, lampId) {}
 };
 
 }

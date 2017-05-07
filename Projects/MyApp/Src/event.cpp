@@ -160,10 +160,14 @@ char const * const eventName[] = {
     "TRAFFIC_STOP_CFM",
     "TRAFFIC_CAR_NS_REQ",
     "TRAFFIC_CAR_EW_REQ",
-    "TRAFFIC_WAIT_TIMER",   
+    "TRAFFIC_ERROR_REQ",
+    "TRAFFIC_WAIT_TIMER",
+    "TRAFFIC_IDLE_TIMER",
+    "TRAFFIC_BLINK_TIMER",
     "LAMP_RED_REQ",      
     "LAMP_YELLOW_REQ",   
-    "LAMP_GREEN_REQ", 
+    "LAMP_GREEN_REQ",
+    "LAMP_OFF_REQ"
 };
 
 char const * GetEvtName(QP::QSignal sig) {

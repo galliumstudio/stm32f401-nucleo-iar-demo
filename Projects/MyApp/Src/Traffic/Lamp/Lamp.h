@@ -51,7 +51,11 @@ public:
 protected:
     static QState InitialPseudoState(Lamp * const me, QEvt const * const e);
     static QState Root(Lamp * const me, QEvt const * const e);
-
+        static QState Red(Lamp * const me, QEvt const * const e);
+        static QState Green(Lamp * const me, QEvt const * const e);
+        static QState Yellow(Lamp * const me, QEvt const * const e);
+        static QState Off(Lamp * const me, QEvt const * const e);  
+        
     uint8_t m_id;
     char const * m_name;  
     QActive *m_owner;

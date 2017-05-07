@@ -67,14 +67,24 @@ QState Lamp::Root(Lamp * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-        /*
         case Q_INIT_SIG: {
             status = Q_TRAN(&Lamp::Red);
             break;
         }
-        */
-            
+        case LAMP_RED_REQ:
+        {
+            LOG_EVENT(e);
+            status = Q_TRAN(&Lamp::Red);
+            break;
+        }    
+        case LAMP_OFF_REQ:
+        {
+            LOG_EVENT(e);
+            status = Q_TRAN(&Lamp::Off);
+            break;
+        }    
         // Test only - please remove.
+        /*
         case LAMP_RED_REQ:
         case LAMP_YELLOW_REQ:
         case LAMP_GREEN_REQ:
@@ -84,7 +94,7 @@ QState Lamp::Root(Lamp * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
-            
+        */       
         default: {
             status = Q_SUPER(&QHsm::top);
             break;
@@ -93,6 +103,105 @@ QState Lamp::Root(Lamp * const me, QEvt const * const e) {
     return status;
 }
 
+QState Lamp::Red(Lamp * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            DEBUG("[*][ ][ ]");
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case LAMP_GREEN_REQ:
+        {
+            LOG_EVENT(e);
+            status = Q_TRAN(&Lamp::Green);
+            break;
+        }        
+        default: {
+            status = Q_SUPER(&Lamp::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState Lamp::Green(Lamp * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            DEBUG("[ ][ ][*]");
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        case LAMP_YELLOW_REQ:
+        {
+            LOG_EVENT(e);
+            status = Q_TRAN(&Lamp::Yellow);
+            break;
+        }        
+        default: {
+            status = Q_SUPER(&Lamp::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState Lamp::Yellow(Lamp * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            DEBUG("[ ][*][ ]");            
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&Lamp::Root);
+            break;
+        }
+    }
+    return status;
+}
+
+QState Lamp::Off(Lamp * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            DEBUG("[ ][ ][ ]");            
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        } 
+        default: {
+            status = Q_SUPER(&Lamp::Root);
+            break;
+        }
+    }
+    return status;
+}
 
 /*
 QState Lamp::MyState(Lamp * const me, QEvt const * const e) {
