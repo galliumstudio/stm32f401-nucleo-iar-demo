@@ -74,7 +74,7 @@ void UserBtn::GpioIntCallback(uint8_t id) {
 UserBtn::UserBtn() :
     QActive((QStateHandler)&UserBtn::InitialPseudoState), 
     m_id(USER_BTN), m_name("USER_BTN"), m_nextSequence(0), 
-    m_stateTimer(this, USER_BTN_STATE_TIMER) {}
+    m_stateTimer(this, USER_BTN_STATE_TIMER), m_holdTimer(this, USER_BTN_HOLD_TIMER) {}
 
 QState UserBtn::InitialPseudoState(UserBtn * const me, QEvt const * const e) {
     (void)e;
@@ -82,6 +82,7 @@ QState UserBtn::InitialPseudoState(UserBtn * const me, QEvt const * const e) {
     me->subscribe(USER_BTN_START_REQ);
     me->subscribe(USER_BTN_STOP_REQ);
     me->subscribe(USER_BTN_STATE_TIMER);
+    me->subscribe(USER_BTN_HOLD_TIMER);
     me->subscribe(USER_BTN_TRIG);
     me->subscribe(USER_BTN_UP);
     me->subscribe(USER_BTN_DOWN);
@@ -246,6 +247,10 @@ QState UserBtn::Down(UserBtn * const me, QEvt const * const e) {
             status = Q_HANDLED();
             break;
         }
+        case Q_INIT_SIG: {
+            status = Q_TRAN(&UserBtn::HoldWait);
+            break;
+        }
         case USER_BTN_TRIG: {
             LOG_EVENT(e);
             EnableGpioInt();
@@ -268,6 +273,56 @@ QState UserBtn::Down(UserBtn * const me, QEvt const * const e) {
     return status;
 }
 
+QState UserBtn::HoldWait(UserBtn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            me->m_holdTimer.armX(HOLD_TIMER_MS);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            me->m_holdTimer.disarm();
+            status = Q_HANDLED();
+            break;
+        }
+        case USER_BTN_HOLD_TIMER: {
+            LOG_EVENT(e);
+            status = Q_TRAN(&UserBtn::HoldDetected);
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UserBtn::Down);
+            break;
+        }
+    }
+    return status;
+}
+
+QState UserBtn::HoldDetected(UserBtn * const me, QEvt const * const e) {
+    QState status;
+    switch (e->sig) {
+        case Q_ENTRY_SIG: {
+            LOG_EVENT(e);
+            Evt *evt = new Evt(USER_BTN_HOLD_IND, me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
+            status = Q_HANDLED();
+            break;
+        }
+        case Q_EXIT_SIG: {
+            LOG_EVENT(e);
+            status = Q_HANDLED();
+            break;
+        }
+        default: {
+            status = Q_SUPER(&UserBtn::Down);
+            break;
+        }
+    }
+    return status;
+}
 
 /*
 QState UserBtn::MyState(UserBtn * const me, QEvt const * const e) {

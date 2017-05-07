@@ -77,7 +77,7 @@ protected:
     QTimeEvt m_activeTimer;
     
     enum{
-        ACTIVE_TIMER_MS = 50
+        ACTIVE_TIMER_MS = 10
     };
 };
 

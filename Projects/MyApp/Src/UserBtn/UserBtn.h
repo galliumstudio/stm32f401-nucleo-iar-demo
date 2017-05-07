@@ -54,6 +54,8 @@ protected:
         static QState Started(UserBtn * const me, QEvt const * const e);
             static QState Up(UserBtn * const me, QEvt const * const e);
             static QState Down(UserBtn * const me, QEvt const * const e);
+                static QState HoldWait(UserBtn * const me, QEvt const * const e);
+                static QState HoldDetected(UserBtn * const me, QEvt const * const e);                        
         
     static void ConfigGpioInt();
     static void EnableGpioInt();
@@ -67,7 +69,11 @@ protected:
     char const * m_name;
     uint16_t m_nextSequence;    
 
+    enum {
+        HOLD_TIMER_MS = 500    
+    };
     QTimeEvt m_stateTimer;
+    QTimeEvt m_holdTimer;
 };
 
 } // namespace APP
