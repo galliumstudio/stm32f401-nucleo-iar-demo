@@ -248,7 +248,10 @@ QState UserBtn::Down(UserBtn * const me, QEvt const * const e) {
             break;
         }
         case Q_INIT_SIG: {
-            status = Q_TRAN(&UserBtn::HoldWait);
+            // TODO - ASSIGNMENT 4
+            // Transit to HoldWait state.
+            // Remove the following placeholder (status = ...).
+            status = Q_HANDLED();
             break;
         }
         case USER_BTN_TRIG: {
@@ -278,19 +281,24 @@ QState UserBtn::HoldWait(UserBtn * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->m_holdTimer.armX(HOLD_TIMER_MS);
+            // TODO - ASSIGNMENT 4
+            // Start m_holdTimer expiring in HOLD_TIMER_MS.
             status = Q_HANDLED();
             break;
         }
         case Q_EXIT_SIG: {
             LOG_EVENT(e);
-            me->m_holdTimer.disarm();
+            // TODO - ASSIGNMENT 4
+            // Stop m_holdTimer.
             status = Q_HANDLED();
             break;
         }
         case USER_BTN_HOLD_TIMER: {
             LOG_EVENT(e);
-            status = Q_TRAN(&UserBtn::HoldDetected);
+            // TODO - ASSIGNMENT 4
+            // Transit to HoldDetected state.
+            // Remove the following placeholder (status = ...).
+            status = Q_HANDLED();
             break;
         }
         default: {
@@ -306,8 +314,8 @@ QState UserBtn::HoldDetected(UserBtn * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            Evt *evt = new Evt(USER_BTN_HOLD_IND, me->m_nextSequence++);
-            QF::PUBLISH(evt, me);
+            // TODO - ASSIGNMENT 4
+            // Publish the USER_BTN_HOLD_IND event.
             status = Q_HANDLED();
             break;
         }
