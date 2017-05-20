@@ -38,6 +38,13 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
 
+/*
+#undef LOG_EVENT
+#undef DEBUG
+#define LOG_EVENT(e)            
+#define DEBUG(x, y)
+*/
+
 Q_DEFINE_THIS_FILE
 
 using namespace FW;
@@ -84,6 +91,21 @@ QState System::Root(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+            
+            // Profiling test.
+            // Enable GPIO pins PC2, PC3 for profiling
+            GPIO_InitTypeDef   GPIO_InitStruct;
+            __HAL_RCC_GPIOC_CLK_ENABLE();
+            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+            GPIO_InitStruct.Pull = GPIO_PULLUP;
+            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+            GPIO_InitStruct.Pin = GPIO_PIN_2;
+            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+            GPIO_InitStruct.Pin = GPIO_PIN_3;
+            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_2, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);
+            
             status = Q_HANDLED();
             break;
         }
@@ -439,6 +461,12 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case USER_BTN_DOWN_IND: {
             LOG_EVENT(e);
+            
+            // Profiling test.
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);               
+            Evt *evt = new UserLedOnReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);            
+            
             status = Q_HANDLED();
             break;  
         }        
@@ -451,6 +479,9 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case USER_LED_ON_CFM: 
         case USER_LED_OFF_CFM: {
+            // Profiling test.
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);  
+            
             LOG_EVENT(e);
             status = Q_HANDLED();
             break;    

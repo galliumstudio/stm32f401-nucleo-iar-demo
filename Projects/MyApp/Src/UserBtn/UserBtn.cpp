@@ -33,6 +33,13 @@
 #include "event.h"
 #include "bsp.h"
 
+/*
+#undef LOG_EVENT
+#undef DEBUG
+#define LOG_EVENT(e)            
+#define DEBUG(x)
+*/
+
 //Q_DEFINE_THIS_FILE
 
 namespace APP {
@@ -214,6 +221,9 @@ QState UserBtn::Up(UserBtn * const me, QEvt const * const e) {
             LOG_EVENT(e);
             EnableGpioInt();
             if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) {
+                // Profiling test.
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);    
+                
                 Evt *evt = new Evt(USER_BTN_DOWN, me->m_nextSequence++);
                 me->postLIFO(evt);
             }
@@ -237,6 +247,10 @@ QState UserBtn::Down(UserBtn * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
+            
+            // Profiling test.
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);   
+            
             Evt *evt = new Evt(USER_BTN_DOWN_IND, me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();

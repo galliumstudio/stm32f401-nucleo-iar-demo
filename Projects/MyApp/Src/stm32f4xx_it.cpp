@@ -123,6 +123,9 @@ void EXTI15_10_IRQHandler(void)
 {
     QXK_ISR_ENTRY();
     if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_13) != RESET) {
+        // Profiling test.
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
+        
         HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
     }
     // Add other pins (10 to 15) here if needed.

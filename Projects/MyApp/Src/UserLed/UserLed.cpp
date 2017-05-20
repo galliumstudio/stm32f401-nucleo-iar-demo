@@ -33,6 +33,13 @@
 #include "UserLed.h"
 #include "event.h"
 
+/*
+#undef LOG_EVENT
+#undef DEBUG
+#define LOG_EVENT(e)            
+#define DEBUG(x)
+*/
+
 Q_DEFINE_THIS_FILE
 
 namespace APP {
@@ -226,6 +233,9 @@ QState UserLed::Started(UserLed * const me, QEvt const * const e) {
             break;
         }
         case USER_LED_ON_REQ: {
+            // Profiling test.
+            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);                        
+            
             LOG_EVENT(e);
             Evt const &req = EVT_CAST(*e);
             Evt *evt = new UserLedOnCfm(req.GetSeq(), ERROR_SUCCESS);
