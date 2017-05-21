@@ -145,6 +145,11 @@ extern "C" void Q_onAssert(char const * const module, int loc) {
     (void)loc;
 
     // Gallium - TBD
+    char buf[200];
+    HAL_Delay(100);
+    QF_INT_DISABLE();
+    snprintf(buf, sizeof(buf), "**** ASSERT: %s %d ****\n\r", module, loc);
+    BspWrite(buf, strlen(buf));
     for (;;) {
     }
     //NVIC_SystemReset();

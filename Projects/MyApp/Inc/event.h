@@ -98,12 +98,76 @@ enum {
     USER_LED_START_CFM,
     USER_LED_STOP_REQ,
     USER_LED_STOP_CFM,
-    USER_LED_ON_REQ,
-    USER_LED_ON_CFM,
+    USER_LED_ON_REQ,            // Deprecated
+    USER_LED_ON_CFM,            // Deprecated
+    USER_LED_PATTERN_REQ,
+    USER_LED_PATTERN_CFM,
     USER_LED_OFF_REQ,
     USER_LED_OFF_CFM,   
-    USER_LED_STATE_TIMER,
+    USER_LED_INTERVAL_TIMER,
     USER_LED_DONE,
+    USER_LED_NEXT_INTERVAL,
+    USER_LED_LAST_INTERVAL,
+    USER_LED_LOAD_PATTERN,
+    USER_LED_PATTERN_END,
+    USER_LED_NEW_PATTERN,
+
+    // Washing machine control simulator
+    USER_SIM_START_REQ,
+    USER_SIM_START_CFM,
+    USER_SIM_STOP_REQ,
+    USER_SIM_STOP_CFM,
+    OPEN_DOOR_IND,
+    CLOSE_DOOR_IND,
+    START_PAUSE_BUTTON_IND,
+    CYCLE_SELECTED_IND,
+
+    // Washing machine
+    WASH_START_REQ,
+    WASH_START_CFM,
+    WASH_STOP_REQ,
+    WASH_STOP_CFM,
+
+    // Internal washing machine events
+    iWASH_START,
+    iWASH_CLOSE,
+    iWASH_OPEN,
+    iWASH_DONE,
+    WASH_TIMEOUT,
+    RINSE_TIMEOUT,
+    SPIN_TIMEOUT,
+
+
+    // Washing machine sensor events
+    WASH_FILLED_IND,
+    WASH_DRAINED_IND,
+
+    // Demo
+    DEMO_A,
+    DEMO_B,
+    DEMO_C,
+    DEMO_D,    
+    DEMO_E,
+    DEMO_F,
+    DEMO_G,
+    DEMO_H,
+    DEMO_I,
+    
+    // Traffic
+    TRAFFIC_START_REQ,
+    TRAFFIC_START_CFM,
+    TRAFFIC_STOP_REQ,
+    TRAFFIC_STOP_CFM,
+    TRAFFIC_CAR_NS_REQ,         // of type Evt (no CFM)
+    TRAFFIC_CAR_EW_REQ,         // of type Evt (no CFM)
+    TRAFFIC_ERROR_REQ,          // of type Evt (no CFM)
+    TRAFFIC_WAIT_TIMER,         // of type QTimeEvt
+    TRAFFIC_IDLE_TIMER,         // of type QTimeEvt
+    TRAFFIC_BLINK_TIMER,        // of type QTimeEvt
+    LAMP_RED_REQ,               // of type LampRedReq (no CFM)
+    LAMP_YELLOW_REQ,            // of type LampYellowReq (no CFM)
+    LAMP_GREEN_REQ,             // of type LampGreenReq (no CFM)
+    LAMP_OFF_REQ,               // of type LampGreenReq (no CFM)
     
     MAX_PUB_SIG
 };
@@ -355,19 +419,212 @@ public:
         ErrorEvt(USER_LED_ON_CFM, seq, error, reason) {}
 };
 
+class UserLedPatternReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserLedPatternReq(uint16_t seq, uint32_t patternIndex, bool isRepeat = false, uint32_t layer = 0) :
+        Evt(USER_LED_PATTERN_REQ, seq), m_patternIndex(patternIndex),
+        m_isRepeat(isRepeat), m_layer(layer) {}
+        
+    uint32_t GetPatternIndex() const { return m_patternIndex; }
+    bool IsRepeat() const { return m_isRepeat; }
+    uint32_t GetLayer() const { return m_layer; }
+private:
+    uint32_t m_patternIndex;
+    bool m_isRepeat;
+    uint32_t m_layer;
+};
+
+class UserLedPatternCfm : public ErrorEvt {
+public:
+    UserLedPatternCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_LED_PATTERN_CFM, seq, error, reason) {}
+};
+
 class UserLedOffReq : public Evt {
 public:
     enum {
         TIMEOUT_MS = 100
     };
-    UserLedOffReq(uint16_t seq) :
-        Evt(USER_LED_OFF_REQ, seq) {}
+    UserLedOffReq(uint16_t seq, uint32_t layer) :
+        Evt(USER_LED_OFF_REQ, seq),  m_layer(layer) {}
+    uint32_t GetLayer() const { return m_layer; }        
+private:
+    uint32_t m_layer;        
 };
 
 class UserLedOffCfm : public ErrorEvt {
 public:
     UserLedOffCfm(uint16_t seq, Error error, Reason reason = 0) :
         ErrorEvt(USER_LED_OFF_CFM, seq, error, reason) {}
+};
+
+class UserSimStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserSimStartReq(uint16_t seq) :
+        Evt(USER_SIM_START_REQ, seq) {}
+};
+    
+class UserLedNewPattern: public Evt {
+public:
+    UserLedNewPattern(uint32_t layer) :
+        Evt(USER_LED_NEW_PATTERN, 0), m_layer(layer) {}
+    uint32_t GetLayer() const { return m_layer; }
+private:
+    uint32_t m_layer;
+};
+
+class UserSimStartCfm : public ErrorEvt {
+public:
+    UserSimStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_SIM_START_CFM, seq, error, reason) {}
+};
+
+class UserSimStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    UserSimStopReq(uint16_t seq) :
+        Evt(USER_SIM_STOP_REQ, seq) {}
+};
+
+class UserSimStopCfm : public ErrorEvt {
+public:
+    UserSimStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(USER_SIM_STOP_CFM, seq, error, reason) {}
+};
+
+
+class UserSimOpenDoorInd : public Evt {
+public:
+    UserSimOpenDoorInd() :
+        Evt(OPEN_DOOR_IND) {}
+};
+
+class UserSimCloseDoorInd : public Evt {
+public:
+    UserSimCloseDoorInd() :
+        Evt(CLOSE_DOOR_IND) {}
+};
+
+class UserSimStartPauseInd : public Evt {
+public:
+    UserSimStartPauseInd() :
+        Evt(START_PAUSE_BUTTON_IND) {}
+};
+
+class UserSimCycleSelectedInd : public Evt {
+public:
+    typedef enum {
+        NORMAL,
+        DELICATE,
+        BULKY,
+        TOWELS
+    } CycleType;
+    UserSimCycleSelectedInd(CycleType cycle) :
+        Evt(CYCLE_SELECTED_IND), m_cycleType(cycle) {}
+    CycleType GetCycleType() const { return m_cycleType; }
+private:
+    CycleType m_cycleType;
+};
+
+class WashStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    WashStartReq(uint16_t seq) :
+        Evt(WASH_START_REQ, seq) {}
+};
+
+class WashStartCfm : public ErrorEvt {
+public:
+    WashStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(WASH_START_CFM, seq, error, reason) {}
+};
+
+class WashStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    WashStopReq(uint16_t seq) :
+        Evt(WASH_STOP_REQ, seq) {}
+};
+
+class WashStopCfm : public ErrorEvt {
+public:
+    WashStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(WASH_STOP_CFM, seq, error, reason) {}
+};
+
+class TrafficStartReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    TrafficStartReq(uint16_t seq) :
+        Evt(TRAFFIC_START_REQ, seq) {}
+};
+
+class TrafficStartCfm : public ErrorEvt {
+public:
+    TrafficStartCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(TRAFFIC_START_CFM, seq, error, reason) {}
+};
+
+class TrafficStopReq : public Evt {
+public:
+    enum {
+        TIMEOUT_MS = 100
+    };
+    TrafficStopReq(uint16_t seq) :
+        Evt(TRAFFIC_STOP_REQ, seq) {}
+};
+
+class TrafficStopCfm : public ErrorEvt {
+public:
+    TrafficStopCfm(uint16_t seq, Error error, Reason reason = 0) :
+        ErrorEvt(TRAFFIC_STOP_CFM, seq, error, reason) {}
+};
+
+class LampReq : public Evt {
+public:
+    LampReq(QP::QSignal sig, uint8_t lampId) :
+        Evt(sig, 0), m_lampId(lampId) {}
+        uint8_t GetLampId() const { return m_lampId; }
+private:
+    uint8_t m_lampId;   // either LAMP_NS or LAMP_EW
+};
+
+class LampRedReq : public LampReq {
+public:
+    LampRedReq(uint8_t lampId) :
+        LampReq(LAMP_RED_REQ, lampId) {}
+};
+
+class LampYellowReq : public LampReq {
+public:
+    LampYellowReq(uint8_t lampId) :
+        LampReq(LAMP_YELLOW_REQ, lampId) {}
+};
+
+class LampGreenReq : public LampReq {
+public:
+    LampGreenReq(uint8_t lampId) :
+        LampReq(LAMP_GREEN_REQ, lampId) {}
+};
+
+class LampOffReq : public LampReq {
+public:
+    LampOffReq(uint8_t lampId) :
+        LampReq(LAMP_OFF_REQ, lampId) {}
 };
 
 }

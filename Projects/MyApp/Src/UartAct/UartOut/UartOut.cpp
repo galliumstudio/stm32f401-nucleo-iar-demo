@@ -34,12 +34,12 @@
 #include "UartOut.h"
 #include "event.h"
 
-/*
+
 #undef LOG_EVENT
-#undef DEBUG
 #define LOG_EVENT(e)            
-#define DEBUG(x)
-*/
+#undef DEBUG
+#define DEBUG(x, y)          
+
 
 Q_DEFINE_THIS_FILE
 

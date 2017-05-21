@@ -33,10 +33,18 @@
 #include "hsm_id.h"
 #include "System.h"
 #include "event.h"
-// Test only.
-#include "Test.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_nucleo.h"
+// Test only.
+#include "Test.h"
+#include "LedPattern.h"
+
+/*
+#undef LOG_EVENT
+#define LOG_EVENT(e)            
+#undef DEBUG
+#define DEBUG(format_, ...)
+*/
 
 Q_DEFINE_THIS_FILE
 
@@ -73,7 +81,9 @@ QState System::InitialPseudoState(System * const me, QEvt const * const e) {
     me->subscribe(USER_LED_START_CFM);
     me->subscribe(USER_LED_ON_CFM);
     me->subscribe(USER_LED_OFF_CFM);
-      
+    me->subscribe(TRAFFIC_START_CFM);
+    me->subscribe(TRAFFIC_STOP_CFM);
+
     return Q_TRAN(&System::Root);
 }
 
@@ -218,6 +228,7 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStartReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStartReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStartReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > TrafficStartReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
             
@@ -225,6 +236,9 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
             evt = new UserBtnStartReq(me->m_nextSequence++);
+            // TODO - Save sequence number for comparison.
+            QF::PUBLISH(evt, me);
+            evt = new TrafficStartReq(me->m_nextSequence++);
             // TODO - Save sequence number for comparison.
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
@@ -237,9 +251,10 @@ QState System::Starting2(System * const me, QEvt const * const e) {
             break;
         }
         case USER_LED_START_CFM:
-        case USER_BTN_START_CFM: {
+        case USER_BTN_START_CFM:
+        case TRAFFIC_START_CFM: {
             LOG_EVENT(e);
-            me->HandleCfm(ERROR_EVT_CAST(*e), 2);
+            me->HandleCfm(ERROR_EVT_CAST(*e), 3);       
             status = Q_HANDLED();
             break;
         }
@@ -341,12 +356,15 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             uint32_t timeout = SystemStopReq::TIMEOUT_MS / 2;
             Q_ASSERT(timeout > UserLedStopReq::TIMEOUT_MS);
             Q_ASSERT(timeout > UserBtnStopReq::TIMEOUT_MS);
+            Q_ASSERT(timeout > TrafficStopReq::TIMEOUT_MS);
             me->m_stateTimer.armX(timeout);
             me->m_cfmCount = 0;
 
             Evt *evt = new UserLedStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             evt = new UserBtnStopReq(me->m_nextSequence++);
+            QF::PUBLISH(evt, me);
+            evt = new TrafficStopReq(me->m_nextSequence++);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
@@ -367,9 +385,10 @@ QState System::Stopping2(System * const me, QEvt const * const e) {
             break;
         }
         case USER_LED_STOP_CFM:
-        case USER_BTN_STOP_CFM: {
+        case USER_BTN_STOP_CFM:
+        case TRAFFIC_STOP_CFM: {
             LOG_EVENT(e);
-            me->HandleCfm(ERROR_EVT_CAST(*e), 2);
+            me->HandleCfm(ERROR_EVT_CAST(*e), 3);
             status = Q_HANDLED();
             break;
         }
@@ -399,7 +418,10 @@ QState System::Started(System * const me, QEvt const * const e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             LOG_EVENT(e);
-            me->m_testTimer.armX(2000, 2000);   
+            //me->m_testTimer.armX(2000, 2000);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, true, 0);
+            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 0, false, 0);
+            QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;
         }
@@ -411,38 +433,39 @@ QState System::Started(System * const me, QEvt const * const e) {
             break;
         }
         case SYSTEM_TEST_TIMER: {
-            //LOG_EVENT(e);
+            //LOG_EVENT(e);          
+            /*
             static int testcount = 10000;
             char msg[100];
             snprintf(msg, sizeof(msg), "This is a UART DMA transmission testing number %d.", testcount++);
             DEBUG("Writing %s", msg);
-            // C++ test function.
-            TestBase tb(100);
-            TestDerived1 td1;
-            TestBase *pb;
-            pb = &tb;
-            pb->Print();
-            pb = &td1;
-            pb->Print();
+            */
             
             status = Q_HANDLED();
             break;
         }
         case USER_BTN_UP_IND: {
             LOG_EVENT(e);
-            Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            //Evt *evt = new UserLedOffReq(me->m_nextSequence++);
+            //QF::PUBLISH(evt, me);
+            Evt *evt = new UserLedOffReq(me->m_nextSequence++, 1);
             QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
             }
         case USER_BTN_DOWN_IND: {
-            LOG_EVENT(e);
-            Evt *evt = new UserLedOnReq(me->m_nextSequence++);
+            LOG_EVENT(e);            
+            //Evt *evt = new UserLedOnReq(me->m_nextSequence++);
+            //Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, false, 1);
+            Evt *evt = new UserLedPatternReq(me->m_nextSequence++, 1, true, 1);
             QF::PUBLISH(evt, me);
+            //evt = new UserLedOffReq(me->m_nextSequence++, 0);
+            //QF::PUBLISH(evt, me);
             status = Q_HANDLED();
             break;  
         }
         case USER_LED_ON_CFM: 
+        case USER_LED_PATTERN_CFM: 
         case USER_LED_OFF_CFM: {
             LOG_EVENT(e);
             status = Q_HANDLED();
@@ -450,7 +473,22 @@ QState System::Started(System * const me, QEvt const * const e) {
         }
         case UART_IN_CHAR_IND: {
             UartInCharInd const &ind = static_cast<UartInCharInd const &>(*e);
-            DEBUG("Rx char %c", ind.GetChar());
+            //DEBUG("Rx char %c", ind.GetChar());
+            
+            // Week 2 C++ test examples.
+            //TestFunction();
+            // LedPattern testing.
+            /*
+            uint32_t patternIdx, intervalIdx;
+            for (patternIdx = 0; patternIdx < TEST_LED_PATTERN_SET.GetCount(); patternIdx++) {
+                DEBUG("LED Pattern %d", patternIdx);
+                LedPattern const &pattern = TEST_LED_PATTERN_SET.GetPattern(patternIdx);
+                for (intervalIdx = 0; intervalIdx < pattern.GetCount(); intervalIdx++) {
+                    LedInterval const &interval = pattern.GetInterval(intervalIdx);
+                    DEBUG("    interval[%d] = {%d, %d}", intervalIdx, interval.GetLevelPermil(), interval.GetDurationMs());
+                }
+            } 
+            */
             status = Q_HANDLED();
             break;
         }

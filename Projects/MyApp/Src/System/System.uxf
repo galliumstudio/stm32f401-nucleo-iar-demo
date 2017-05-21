@@ -28,8 +28,8 @@ fontfamily=Monospaced //possible: SansSerif,Serif,Monospaced
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>20</x>
-      <y>20</y>
+      <x>80</x>
+      <y>0</y>
       <w>1380</w>
       <h>940</h>
     </coordinates>
@@ -45,8 +45,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>460</x>
-      <y>100</y>
+      <x>520</x>
+      <y>80</y>
       <w>410</w>
       <h>90</h>
     </coordinates>
@@ -60,8 +60,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>860</x>
-      <y>240</y>
+      <x>920</x>
+      <y>220</y>
       <w>380</w>
       <h>150</h>
     </coordinates>
@@ -83,8 +83,8 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>90</x>
-      <y>240</y>
+      <x>150</x>
+      <y>220</y>
       <w>380</w>
       <h>150</h>
     </coordinates>
@@ -107,8 +107,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>260</x>
-      <y>150</y>
+      <x>320</x>
+      <y>130</y>
       <w>220</w>
       <h>110</h>
     </coordinates>
@@ -118,8 +118,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>460</x>
-      <y>310</y>
+      <x>520</x>
+      <y>290</y>
       <w>420</w>
       <h>30</h>
     </coordinates>
@@ -129,8 +129,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>260</x>
-      <y>380</y>
+      <x>320</x>
+      <y>360</y>
       <w>30</w>
       <h>130</h>
     </coordinates>
@@ -140,8 +140,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>590</x>
-      <y>60</y>
+      <x>650</x>
+      <y>40</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -151,8 +151,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>600</x>
-      <y>60</y>
+      <x>660</x>
+      <y>40</y>
       <w>80</w>
       <h>60</h>
     </coordinates>
@@ -162,8 +162,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>860</x>
-      <y>150</y>
+      <x>920</x>
+      <y>130</y>
       <w>210</w>
       <h>110</h>
     </coordinates>
@@ -173,8 +173,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>590</x>
-      <y>430</y>
+      <x>650</x>
+      <y>410</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -184,8 +184,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>600</x>
-      <y>430</y>
+      <x>660</x>
+      <y>410</y>
       <w>170</w>
       <h>30</h>
     </coordinates>
@@ -195,19 +195,19 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1040</x>
-      <y>630</y>
+      <x>1100</x>
+      <y>640</y>
       <w>380</w>
-      <h>100</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>360.0;80.0;10.0;80.0;10.0;10.0</additional_attributes>
+    <additional_attributes>360.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>270</x>
-      <y>190</y>
+      <x>330</x>
+      <y>170</y>
       <w>230</w>
       <h>30</h>
     </coordinates>
@@ -218,8 +218,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>560</x>
-      <y>280</y>
+      <x>620</x>
+      <y>260</y>
       <w>210</w>
       <h>40</h>
     </coordinates>
@@ -231,8 +231,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>630</x>
-      <y>410</y>
+      <x>690</x>
+      <y>390</y>
       <w>130</w>
       <h>30</h>
     </coordinates>
@@ -244,8 +244,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>550</x>
-      <y>530</y>
+      <x>610</x>
+      <y>510</y>
       <w>240</w>
       <h>30</h>
     </coordinates>
@@ -257,8 +257,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1110</x>
-      <y>680</y>
+      <x>1170</x>
+      <y>660</y>
       <w>230</w>
       <h>30</h>
     </coordinates>
@@ -269,8 +269,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>90</x>
-      <y>770</y>
+      <x>150</x>
+      <y>750</y>
       <w>1080</w>
       <h>150</h>
     </coordinates>
@@ -289,21 +289,24 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>90</x>
-      <y>490</y>
+      <x>150</x>
+      <y>470</y>
       <w>380</w>
-      <h>150</h>
+      <h>170</h>
     </coordinates>
     <panel_attributes>Starting2
 --
 entry/ start stateTimer, m_cfmCount = 0
        ^USER_LED_START_REQ, 
-       ^USER_BTN_START_REQ
+       ^USER_BTN_START_REQ,
+       ^USER_SIM_START_REQ,
+       ^WASH_START_REQ
 exit/ stop stateTimer
 
-USER_LED_START_CFM, USER_BTN_START_CFM
+USER_LED_START_CFM, USER_BTN_START_CFM,
+USER_SIM_START_REQ, WASH_START_REQ
 / if (SUCCESS)
-    if (++cfmCount == 2) ^DONE
+    if (++cfmCount == 4) ^DONE
   else ^FAIL  
     
 valign=top
@@ -313,19 +316,19 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>260</x>
+      <x>320</x>
       <y>630</y>
       <w>30</w>
-      <h>160</h>
+      <h>140</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>270</x>
-      <y>690</y>
+      <x>330</x>
+      <y>670</y>
       <w>240</w>
       <h>30</h>
     </coordinates>
@@ -336,8 +339,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>270</x>
-      <y>430</y>
+      <x>330</x>
+      <y>410</y>
       <w>270</w>
       <h>40</h>
     </coordinates>
@@ -348,22 +351,25 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>860</x>
-      <y>490</y>
+      <x>920</x>
+      <y>470</y>
       <w>380</w>
-      <h>150</h>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Stopping2
 --
 entry/ start stateTimer, m_cfmCount = 0,
        ^USER_LED_STOP_REQ,
-       ^USER+BTN__STOP_REQ
+       ^USER_BTN__STOP_REQ,
+       ^USER_SIM_STOP_REQ,
+       ^WASH_STOP_REQ       
 exit/ stop stateTimer, recall
 
 SYSTEM_STOP_REQ/ defer
-USER_LED_STOP_CFM, USER_BTN_STOP_CFM
+USER_LED_STOP_CFM, USER_BTN_STOP_CFM,
+USER_SIM_STOP_REQ, WASH_STOP_REQ
 / if (SUCCESS)
-    if (++m_cfmCount == 2) ^DONE
+    if (++m_cfmCount == 4) ^DONE
   else ^FAIL
     
 valign=top
@@ -373,8 +379,8 @@ valign=top
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>750</x>
-      <y>430</y>
+      <x>810</x>
+      <y>410</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -384,8 +390,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>750</x>
-      <y>350</y>
+      <x>810</x>
+      <y>330</y>
       <w>130</w>
       <h>100</h>
     </coordinates>
@@ -395,8 +401,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>750</x>
-      <y>440</y>
+      <x>810</x>
+      <y>420</y>
       <w>130</w>
       <h>100</h>
     </coordinates>
@@ -406,8 +412,8 @@ valign=top
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1040</x>
-      <y>380</y>
+      <x>1100</x>
+      <y>360</y>
       <w>30</w>
       <h>130</h>
     </coordinates>
@@ -417,8 +423,8 @@ valign=top
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1050</x>
-      <y>440</y>
+      <x>1110</x>
+      <y>420</y>
       <w>60</w>
       <h>30</h>
     </coordinates>
@@ -429,8 +435,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>1050</x>
-      <y>190</y>
+      <x>1110</x>
+      <y>170</y>
       <w>220</w>
       <h>40</h>
     </coordinates>
@@ -442,8 +448,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>460</x>
-      <y>560</y>
+      <x>520</x>
+      <y>540</y>
       <w>420</w>
       <h>30</h>
     </coordinates>
@@ -453,8 +459,8 @@ style=wordwrap</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1060</x>
-      <y>110</y>
+      <x>1120</x>
+      <y>90</y>
       <w>170</w>
       <h>70</h>
     </coordinates>

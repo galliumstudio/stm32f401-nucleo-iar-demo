@@ -32,7 +32,11 @@
 #include "UartIn.h"
 #include "event.h"
 
+#undef LOG_EVENT
+#define LOG_EVENT(e)            
+
 //Q_DEFINE_THIS_FILE
+
 
 namespace APP {
 
@@ -166,6 +170,7 @@ QState UartIn::Started(UartIn * const me, QEvt const * const e) {
             Evt *evt = new UartInCharInd(me->m_nextSequence++, ch);
             QF::PUBLISH(evt, me);
             me->EnableRxInt();
+            status = Q_HANDLED();
             break;
         }
         default: {

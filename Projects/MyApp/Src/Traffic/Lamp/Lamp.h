@@ -27,42 +27,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef HSM_ID_H
-#define HSM_ID_H
+#ifndef LAMP_H
+#define LAMP_H
+
+#include "stm32f4xx.h"
+#include "stm32f4xx_hal.h"
+#include "qpcpp.h"
+#include "fw_evt.h"
+#include "hsm_id.h"
+
+using namespace QP;
+using namespace FW;
 
 namespace APP {
 
-enum {
-    SYSTEM = 1,
-    UART2_ACT,
-    UART2_IN,
-    UART2_OUT,
-    USER_BTN,
-    USER_LED,
-    USER_SIM,
-    WASH,
-    DEMO,
-    TRAFFIC,
-        LAMP_NS,        // Orthogonal regions in Traffic active object
-        LAMP_EW,        // Orthogonal regions in Traffic active object
-    HSM_COUNT
-};
+class Lamp : public QHsm {
+public:
+    Lamp(uint8_t id, char const *name, QActive *owner);
+    void Init() { 
+      QHsm::init(); 
+    }
 
-// Higher value corresponds to higher priority.
-// The maximum priority is defined in qf_port.h as QF_MAX_ACTIVE (32)
-enum
-{
-    PRIO_UART2_ACT  = 30,
-    PRIO_CONSOLE    = 28,
-    PRIO_SYSTEM     = 26,
-    PRIO_USER_BTN   = 24,
-    PRIO_USER_LED   = 22,
-    PRIO_USER_SIM   = 18,
-    PRIO_WASH       = 12,
-    PRIO_DEMO       = 11,
-    PRIO_TRAFFIC    = 10,
+protected:
+    static QState InitialPseudoState(Lamp * const me, QEvt const * const e);
+    static QState Root(Lamp * const me, QEvt const * const e);
+        static QState Red(Lamp * const me, QEvt const * const e);
+        static QState Green(Lamp * const me, QEvt const * const e);
+        static QState Yellow(Lamp * const me, QEvt const * const e);
+        static QState Off(Lamp * const me, QEvt const * const e);  
+        
+    uint8_t m_id;
+    char const * m_name;  
+    QActive *m_owner;
 };
 
 } // namespace APP
 
-#endif // HSM_ID_H
+#endif // LAMP_H

@@ -1673,6 +1673,15 @@
     <group>
       <name>Src</name>
       <group>
+        <name>Demo</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Demo\Demo.h</name>
+        </file>
+      </group>
+      <group>
         <name>System</name>
         <file>
           <name>$PROJ_DIR$\..\Src\System\System.cpp</name>
@@ -1685,6 +1694,24 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\Src\System\Test.h</name>
+        </file>
+      </group>
+      <group>
+        <name>Traffic</name>
+        <group>
+          <name>Lamp</name>
+          <file>
+            <name>$PROJ_DIR$\..\Src\Traffic\Lamp\Lamp.cpp</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\Src\Traffic\Lamp\Lamp.h</name>
+          </file>
+        </group>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Traffic\Trafffic.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\Traffic\Traffic.h</name>
         </file>
       </group>
       <group>
@@ -1728,6 +1755,12 @@
       </group>
       <group>
         <name>UserLed</name>
+        <file>
+          <name>$PROJ_DIR$\..\Src\UserLed\LedPattern.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Src\UserLed\LedPattern.h</name>
+        </file>
         <file>
           <name>$PROJ_DIR$\..\Src\UserLed\stm32f4xx_hal_pwm_msp.c</name>
         </file>

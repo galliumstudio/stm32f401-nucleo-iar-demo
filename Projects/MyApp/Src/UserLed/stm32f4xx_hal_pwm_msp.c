@@ -67,27 +67,9 @@
   * @param htim: TIM handle pointer
   * @retval None
   */
-// User LED uses PA.05 (TIM2_CH1)
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 {
-  GPIO_InitTypeDef   GPIO_InitStruct;
-  /*##-1- Enable peripherals and GPIO Clocks #################################*/
-  /* TIMx Peripheral clock enable */
-  __HAL_RCC_TIM2_CLK_ENABLE();
-
-  /* Enable all GPIO Channels Clock requested */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  /* Configure PA.05 (TIM3_Channel1) in output, push-pull, alternate function mode
-  */
-  /* Common configuration for all channels */
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-
-  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    // Moved over to UserLed::InitPwm().
 }
 
 

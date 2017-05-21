@@ -30,6 +30,7 @@
 #include "qpcpp.h"
 #include "event.h"
 #include "fw_macro.h"
+#include "fw_log.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -100,16 +101,82 @@ char const * const eventName[] = {
     "USER_LED_STOP_CFM",
     "USER_LED_ON_REQ",
     "USER_LED_ON_CFM",
+    "USER_LED_PATTERN_REQ",
+    "USER_LED_PATTERN_CFM",
     "USER_LED_OFF_REQ",
     "USER_LED_OFF_CFM", 
-    "USER_LED_STATE_TIMER",
+    "USER_LED_INTERVAL_TIMER",
     "USER_LED_DONE",
-};  
-  
+    "USER_LED_NEXT_INTERVAL",
+    "USER_LED_LAST_INTERVAL",
+    "USER_LED_LOAD_PATTERN",
+    "USER_LED_PATTERN_END",
+    "USER_LED_NEW_PATTERN",
+
+    // Washing machine control simulator
+    "USER_SIM_START_REQ",
+    "USER_SIM_START_CFM",
+    "USER_SIM_STOP_REQ",
+    "USER_SIM_STOP_CFM",
+    "OPEN_DOOR_IND",
+    "CLOSE_DOOR_IND",
+    "START_PAUSE_BUTTON_IND",
+    "CYCLE_SELECTED_IND",
+
+    // Washing machine
+    "WASH_START_REQ",
+    "WASH_START_CFM",
+    "WASH_STOP_REQ",
+    "WASH_STOP_CFM",
+
+    // Internal washing machine events
+    "iWASH_START",
+    "iWASH_CLOSE",
+    "iWASH_OPEN",
+    "iWASH_DONE",
+    "WASH_TIMEOUT",
+    "RINSE_TIMEOUT",
+    "SPIN_TIMEOUT",
+    
+    // Washing machine sensor events
+    "WASH_FILLED_IND",
+    "WASH_DRAINED_IND",
+
+    // Demo
+    "DEMO_A",
+    "DEMO_B",
+    "DEMO_C",
+    "DEMO_D",    
+    "DEMO_E",
+    "DEMO_F",
+    "DEMO_G",
+    "DEMO_H",
+    "DEMO_I",
+    
+    // Traffic
+    "TRAFFIC_START_REQ",
+    "TRAFFIC_START_CFM",
+    "TRAFFIC_STOP_REQ",
+    "TRAFFIC_STOP_CFM",
+    "TRAFFIC_CAR_NS_REQ",
+    "TRAFFIC_CAR_EW_REQ",
+    "TRAFFIC_ERROR_REQ",
+    "TRAFFIC_WAIT_TIMER",
+    "TRAFFIC_IDLE_TIMER",
+    "TRAFFIC_BLINK_TIMER",
+    "LAMP_RED_REQ",      
+    "LAMP_YELLOW_REQ",   
+    "LAMP_GREEN_REQ",
+    "LAMP_OFF_REQ"
+};
+
 char const * GetEvtName(QP::QSignal sig) {
+    if (sig >= ARRAY_COUNT(eventName)) {
+        PRINT("Assert: eventName array does not match enum in event.h!\r\n");
+    }
     Q_ASSERT(sig < ARRAY_COUNT(eventName));
     if (sig < MAX_PUB_SIG) {
-      return eventName[sig];
+        return eventName[sig];
     }
     return "(UNKNOWN)";
 }
