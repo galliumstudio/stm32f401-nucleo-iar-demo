@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) Lawrence Lo (https://github.com/galliumstudio). 
+ * Copyright (C) 2017 Gallium Studio LLC (Lawrence Lo). All rights reserved. 
  * All rights reserved.
  *
  * This program is open source software: you can redistribute it and/or
